@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: investiq_backend
+    ports:
+      - "8000:8000"
+    environment:
+      # Autorizar el puerto 3000 del host
+      - CORS_ORIGINS=http://localhost:3000
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: investiq_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # URL pública que el navegador del usuario usa para ir al backend
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      # Red interna mediante la cual Next.js proxy se comunica con el backend
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: always
