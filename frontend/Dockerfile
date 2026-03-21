@@ -10,11 +10,7 @@ RUN npm install
 COPY . .
 
 # Build the application
-# Use NEXT_PUBLIC_API_URL for client side fetches (browser exposed)
-# Use BACKEND_URL for server side Next.js proxying (internal docker network)
-ENV NEXT_PUBLIC_API_URL=http://localhost:8000
-ENV BACKEND_URL=http://backend:8000
-
+# Environment variables like BACKEND_URL should be provided by Railway at runtime
 RUN npm run build
 
 # Expose Next.js port

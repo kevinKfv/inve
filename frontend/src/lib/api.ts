@@ -4,7 +4,7 @@
  */
 
 const BASE_URL = typeof window === 'undefined'
-  ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000')
+  ? (process.env.BACKEND_URL || 'http://localhost:8000')
   : '';
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
