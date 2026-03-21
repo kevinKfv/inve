@@ -13,6 +13,22 @@ from routers import assets, portfolio, backtesting, alerts, scanner
 
 load_dotenv()
 
+from fastapi.responses import JSONResponse
+import math
+
+def clean_nans(obj):
+    if isinstance(obj, float):
+        return None if math.isnan(obj) or math.isinf(obj) else obj
+    elif isinstance(obj, dict):
+        return {k: clean_nans(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [clean_nans(i) for i in obj]
+    return obj
+
+class SafeJSONResponse(JSONResponse):
+    def render(self, content: any) -> bytes:
+        return super().render(clean_nans(content))
+
 # ─────────────────────────────────────────────
 # App initialization
 # ─────────────────────────────────────────────
@@ -22,6 +38,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    default_response_class=SafeJSONResponse,
 )
 
 # ─────────────────────────────────────────────

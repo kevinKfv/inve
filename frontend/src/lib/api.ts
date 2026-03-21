@@ -3,12 +3,18 @@
  * All endpoints return typed responses. Base URL from env var.
  */
 
-const BASE_URL = typeof window === 'undefined'
-  ? (process.env.BACKEND_URL || 'http://localhost:8000')
-  : '';
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    // Client-side: call the backend directly (port 8000) using CORS, 
+    // bypassing the 30-sec Next.js proxy timeout completely.
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  }
+  // Server-side: Next.js must call the internal Docker network
+  return process.env.BACKEND_URL || 'http://backend:8000';
+};
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(`${getBaseUrl()}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });

@@ -64,11 +64,11 @@ function AssetCard({ item }: { item: ScanItem }) {
         {/* Price */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <span className="mono" style={{ fontWeight: 700, fontSize: 15 }}>
-            ${item.price > 100 ? item.price.toFixed(2) : item.price.toFixed(4)}
+            ${(item.price ?? 0) > 100 ? (item.price ?? 0).toFixed(2) : (item.price ?? 0).toFixed(4)}
           </span>
           <span className={`badge ${isPos ? 'badge-green' : 'badge-red'}`} style={{ fontSize: 11 }}>
             {isPos ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-            {isPos ? '+' : ''}{item.change_pct.toFixed(2)}%
+            {isPos ? '+' : ''}{(item.change_pct ?? 0).toFixed(2)}%
           </span>
         </div>
 
@@ -250,7 +250,7 @@ export default function RecommendationsPage() {
                         <div className="mono" style={{ fontSize: 18, fontWeight: 900, color: SCORE_COLOR(item.score) }}>{item.score}</div>
                         <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 6 }}>{item.score_label}</div>
                         <div className={`badge ${item.change_pct > 0 ? 'badge-green' : 'badge-red'}`} style={{ fontSize: 10 }}>
-                          {item.change_pct > 0 ? '+' : ''}{item.change_pct.toFixed(2)}%
+                          {item.change_pct > 0 ? '+' : ''}{(item.change_pct ?? 0).toFixed(2)}%
                         </div>
                       </div>
                     </Link>

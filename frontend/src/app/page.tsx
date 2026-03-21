@@ -99,7 +99,7 @@ export default function Dashboard() {
               <Link key={t} href={`/asset/${t}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', textDecoration:'none', padding:'6px 0', borderBottom:'1px solid var(--bg-border)' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 13 }}>{t}</span>
                 <div style={{ textAlign: 'right' }}>
-                  <span className="mono text-green" style={{ fontWeight: 700, fontSize: 13 }}>+{v.change_pct.toFixed(2)}%</span>
+                  <span className="mono text-green" style={{ fontWeight: 700, fontSize: 13 }}>+{(v.change_pct ?? 0).toFixed(2)}%</span>
                 </div>
               </Link>
             ))}
@@ -110,7 +110,7 @@ export default function Dashboard() {
             {losers.map(([t, v]) => (
               <Link key={t} href={`/asset/${t}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', textDecoration:'none', padding:'6px 0', borderBottom:'1px solid var(--bg-border)' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 13 }}>{t}</span>
-                <span className="mono text-red" style={{ fontWeight: 700, fontSize: 13 }}>{v.change_pct.toFixed(2)}%</span>
+                <span className="mono text-red" style={{ fontWeight: 700, fontSize: 13 }}>{(v.change_pct ?? 0).toFixed(2)}%</span>
               </Link>
             ))}
           </div>
@@ -159,7 +159,7 @@ export default function Dashboard() {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <span className="mono" style={{ fontWeight: 600 }}>
-                        {data ? `$${data.price.toFixed(data.price > 100 ? 2 : 4)}` : '—'}
+                        {data ? `$${(data.price ?? 0).toFixed((data.price ?? 0) > 100 ? 2 : 4)}` : '—'}
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>

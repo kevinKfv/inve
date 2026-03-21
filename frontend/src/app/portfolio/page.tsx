@@ -121,7 +121,7 @@ export default function PortfolioPage() {
                             return (
                               <td key={j} style={{ padding: '6px 10px', textAlign: 'center', background: bg, borderRadius: 4, fontFamily: 'monospace', fontWeight: 600,
                                 color: val === 1 ? 'var(--text-muted)' : abs > 0.7 ? '#fff' : 'var(--text-primary)' }}>
-                                {val.toFixed(2)}
+                                {(val ?? 0).toFixed(2)}
                               </td>
                             );
                           })}
@@ -143,16 +143,16 @@ function PortfolioCard({ p, color, icon }: { p: any; color: string; icon: string
   return (
     <div className="card" style={{ borderColor: color + '44' }}>
       <div style={{ fontWeight: 700, fontSize: 13, color, marginBottom: 10 }}>{icon} {p.label}</div>
-      <StatRow label="Retorno Anual" value={`${p.return.toFixed(2)}%`} color={p.return > 0 ? 'var(--green)' : 'var(--red)'} />
-      <StatRow label="Volatilidad Anual" value={`${p.volatility.toFixed(2)}%`} />
-      <StatRow label="Sharpe Ratio" value={p.sharpe.toFixed(3)} color="var(--accent)" />
+      <StatRow label="Retorno Anual" value={`${(p.return ?? 0).toFixed(2)}%`} color={(p.return ?? 0) > 0 ? 'var(--green)' : 'var(--red)'} />
+      <StatRow label="Volatilidad Anual" value={`${(p.volatility ?? 0).toFixed(2)}%`} />
+      <StatRow label="Sharpe Ratio" value={(p.sharpe ?? 0).toFixed(3)} color="var(--accent)" />
       <div style={{ marginTop: 10 }}>
         <p style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 6, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Pesos</p>
         {Object.entries(p.weights).map(([t, w]: [string, any]) => (
           <div key={t} style={{ marginBottom: 4 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
               <span style={{ color: 'var(--text-secondary)' }}>{t}</span>
-              <span className="mono" style={{ color: 'var(--text-primary)' }}>{(w * 100).toFixed(1)}%</span>
+              <span className="mono" style={{ color: 'var(--text-primary)' }}>{((w ?? 0) * 100).toFixed(1)}%</span>
             </div>
             <div style={{ height: 3, background: 'var(--bg-border)', borderRadius: 99 }}>
               <div style={{ height: '100%', width: `${w * 100}%`, background: color, borderRadius: 99 }} />

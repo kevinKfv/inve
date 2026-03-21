@@ -13,7 +13,7 @@ type Params = Promise<{ ticker: string }>;
 
 // Build overlay data from candles + MAs
 function buildOverlay(candles: Candle[], window: number) {
-  const out: { time: number; value: number }[] = [];
+  const out: { time: string; value: number }[] = [];
   for (let i = window - 1; i < candles.length; i++) {
     const slice = candles.slice(i - window + 1, i + 1);
     const avg = slice.reduce((s, c) => s + c.close, 0) / window;

@@ -71,7 +71,7 @@ export default function ScoreCard({ score }: Props) {
                 {c.label}
               </span>
               <span className="mono" style={{ fontSize: 11, color: 'var(--text-primary)', fontWeight: 700 }}>
-                {c.score.toFixed(0)}
+                {(c.score ?? 0).toFixed(0)}
               </span>
             </div>
             <div style={{ height: 4, background: 'var(--bg-border)', borderRadius: 99, overflow: 'hidden' }}>

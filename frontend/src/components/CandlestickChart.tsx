@@ -6,11 +6,11 @@ import type { Candle } from '@/lib/api';
 interface Props {
   candles: Candle[];
   height?: number;
-  sma20?: { time: number; value: number }[];
-  sma50?: { time: number; value: number }[];
-  bbUpper?: { time: number; value: number }[];
-  bbLower?: { time: number; value: number }[];
-  bbMiddle?: { time: number; value: number }[];
+  sma20?: { time: string; value: number }[];
+  sma50?: { time: string; value: number }[];
+  bbUpper?: { time: string; value: number }[];
+  bbLower?: { time: string; value: number }[];
+  bbMiddle?: { time: string; value: number }[];
 }
 
 export default function CandlestickChart({
@@ -55,7 +55,7 @@ export default function CandlestickChart({
     candleSeries.setData(candles.map(c => ({ time: c.time as any, open: c.open, high: c.high, low: c.low, close: c.close })));
 
     // Overlays
-    const addLine = (data: { time: number; value: number }[] | undefined, color: string, lineWidth = 1, style = 0) => {
+    const addLine = (data: { time: string; value: number }[] | undefined, color: string, lineWidth = 1, style = 0) => {
       if (!data?.length) return;
       const s = chart.addSeries(LineSeries, { color, lineWidth: lineWidth as any, lineStyle: style as any, priceLineVisible: false, lastValueVisible: false });
       s.setData(data.map(d => ({ time: d.time as any, value: d.value })));

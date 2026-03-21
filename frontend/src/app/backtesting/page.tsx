@@ -108,14 +108,14 @@ export default function BacktestingPage() {
             {/* KPI grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
               {[
-                { label: 'Retorno Estrategia', value: `${m!.total_return_pct > 0 ? '+' : ''}${m!.total_return_pct.toFixed(2)}%`, color: m!.total_return_pct > 0 ? 'var(--green)' : 'var(--red)' },
-                { label: 'Retorno Buy&Hold', value: `${m!.buy_hold_return_pct > 0 ? '+' : ''}${m!.buy_hold_return_pct.toFixed(2)}%`, color: m!.buy_hold_return_pct > 0 ? 'var(--green)' : 'var(--red)' },
-                { label: 'Sharpe Ratio', value: m!.sharpe_ratio.toFixed(3), color: m!.sharpe_ratio > 1 ? 'var(--green)' : m!.sharpe_ratio > 0 ? 'var(--yellow)' : 'var(--red)' },
-                { label: 'Max Drawdown', value: `${m!.max_drawdown_pct.toFixed(2)}%`, color: 'var(--red)' },
-                { label: 'Win Rate', value: `${m!.win_rate_pct.toFixed(1)}%`, color: m!.win_rate_pct > 50 ? 'var(--green)' : 'var(--red)' },
-                { label: 'Total Trades', value: m!.total_trades.toString(), color: 'var(--text-primary)' },
-                { label: 'Retorno Anual', value: `${m!.annual_return_pct.toFixed(2)}%`, color: m!.annual_return_pct > 0 ? 'var(--green)' : 'var(--red)' },
-                { label: 'Volatilidad Anual', value: `${m!.annual_volatility_pct.toFixed(2)}%`, color: 'var(--yellow)' },
+                { label: 'Retorno Estrategia', value: `${(m!.total_return_pct ?? 0) > 0 ? '+' : ''}${(m!.total_return_pct ?? 0).toFixed(2)}%`, color: (m!.total_return_pct ?? 0) > 0 ? 'var(--green)' : 'var(--red)' },
+                { label: 'Retorno Buy&Hold', value: `${(m!.buy_hold_return_pct ?? 0) > 0 ? '+' : ''}${(m!.buy_hold_return_pct ?? 0).toFixed(2)}%`, color: (m!.buy_hold_return_pct ?? 0) > 0 ? 'var(--green)' : 'var(--red)' },
+                { label: 'Sharpe Ratio', value: (m!.sharpe_ratio ?? 0).toFixed(3), color: (m!.sharpe_ratio ?? 0) > 1 ? 'var(--green)' : (m!.sharpe_ratio ?? 0) > 0 ? 'var(--yellow)' : 'var(--red)' },
+                { label: 'Max Drawdown', value: `${(m!.max_drawdown_pct ?? 0).toFixed(2)}%`, color: 'var(--red)' },
+                { label: 'Win Rate', value: `${(m!.win_rate_pct ?? 0).toFixed(1)}%`, color: (m!.win_rate_pct ?? 0) > 50 ? 'var(--green)' : 'var(--red)' },
+                { label: 'Trades', value: m!.total_trades.toString(), color: 'var(--text-primary)' },
+                { label: 'Retorno Anual', value: `${(m!.annual_return_pct ?? 0).toFixed(2)}%`, color: (m!.annual_return_pct ?? 0) > 0 ? 'var(--green)' : 'var(--red)' },
+                { label: 'Volatilidad Anual', value: `${(m!.annual_volatility_pct ?? 0).toFixed(2)}%`, color: 'var(--yellow)' },
               ].map(kpi => (
                 <div key={kpi.label} className="card" style={{ textAlign: 'center', padding: '14px 12px' }}>
                   <p style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{kpi.label}</p>
@@ -154,10 +154,10 @@ export default function BacktestingPage() {
                       <tr key={i}>
                         <td style={{ fontSize: 11 }}>{t.entry_date}</td>
                         <td style={{ fontSize: 11 }}>{t.exit_date}</td>
-                        <td className="mono" style={{ textAlign: 'right', fontSize: 11 }}>${t.entry_price.toFixed(2)}</td>
-                        <td className="mono" style={{ textAlign: 'right', fontSize: 11 }}>${t.exit_price.toFixed(2)}</td>
-                        <td className="mono" style={{ textAlign: 'right', fontSize: 11, color: t.pnl_pct > 0 ? 'var(--green)' : 'var(--red)' }}>
-                          {t.pnl_pct > 0 ? '+' : ''}{t.pnl_pct.toFixed(2)}%
+                        <td className="mono" style={{ textAlign: 'right', fontSize: 11 }}>${(t.entry_price ?? 0).toFixed(2)}</td>
+                        <td className="mono" style={{ textAlign: 'right', fontSize: 11 }}>${(t.exit_price ?? 0).toFixed(2)}</td>
+                        <td className="mono" style={{ textAlign: 'right', color: (t.pnl_pct ?? 0) > 0 ? 'var(--green)' : 'var(--red)', fontWeight: 600, fontSize: 11 }}>
+                          {(t.pnl_pct ?? 0) > 0 ? '+' : ''}{(t.pnl_pct ?? 0).toFixed(2)}%
                         </td>
                         <td><span className={`badge ${t.result === 'WIN' ? 'badge-green' : 'badge-red'}`}>{t.result}</span></td>
                       </tr>
