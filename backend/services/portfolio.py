@@ -26,14 +26,21 @@ def get_returns(tickers: list[str], period: str = "2y") -> pd.DataFrame:
     for ticker in tickers:
         try:
             df = get_ohlcv(ticker, period=period, interval="1d")
-            dfs[ticker] = df["close"]
+            # Strip time and timezone for reliable alignment across asset classes
+            series = df["close"].copy()
+            series.index = pd.to_datetime(series.index).normalize().tz_localize(None)
+            series = series[~series.index.duplicated(keep='last')]
+            dfs[ticker] = series
         except Exception:
             pass  # Skip unavailable tickers
 
     if not dfs:
         raise ValueError("No se pudo obtener datos para ningún ticker.")
 
-    prices = pd.DataFrame(dfs).dropna()
+    # Forward fill to handle missing days (e.g. weekends for stocks when mixed with crypto), then dropna
+    prices = pd.DataFrame(dfs)
+    prices = prices.ffill().dropna()
+    
     returns = np.log(prices / prices.shift(1)).dropna()
     return returns
 
