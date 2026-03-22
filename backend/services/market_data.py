@@ -13,7 +13,7 @@ import time
 from typing import Optional
 import os
 
-CACHE_TTL = int(os.getenv("CACHE_TTL", "300"))  # seconds
+CACHE_TTL = int(os.getenv("CACHE_TTL", "30"))  # seconds
 
 # Simple TTL cache: { key: (timestamp, data) }
 _cache: dict = {}

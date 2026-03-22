@@ -255,3 +255,8 @@ select.input { cursor: pointer; }
   margin: 0 auto;
   padding: 0 1.5rem;
 }
+
+.flash-green { animation: flashGreen 1s ease-out; }
+.flash-red { animation: flashRed 1s ease-out; }
+@keyframes flashGreen { 0% { background-color: rgba(0, 200, 83, 0.4); color: #00ff66; transform: scale(1.02); } 100% { background-color: transparent; } }
+@keyframes flashRed { 0% { background-color: rgba(255, 61, 87, 0.4); color: #ff6b81; transform: scale(1.02); } 100% { background-color: transparent; } }

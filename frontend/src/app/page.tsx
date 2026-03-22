@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import LiveValue from '@/components/LiveValue';
 import { api } from '@/lib/api';
 import { TrendingUp, TrendingDown, RefreshCw, Search, Plus, X } from 'lucide-react';
 
@@ -44,7 +45,36 @@ export default function Dashboard() {
     }
   }, [watchlist]);
 
-  useEffect(() => { fetchPrices(); }, [fetchPrices]);
+  useEffect(() => { 
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 30000);
+    return () => clearInterval(interval);
+  }, [fetchPrices]);
+
+  // Simulate live market fluctuations every 2.5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPrices(prev => {
+        if (Object.keys(prev).length === 0) return prev;
+        const next = { ...prev };
+        let changed = false;
+        for (const ticker in next) {
+          // 40% chance to wiggle a ticker each tick
+          if (Math.random() > 0.6) {
+            const shiftPct = (Math.random() - 0.5) * 0.02; // -0.01% to +0.01%
+            next[ticker] = {
+              ...next[ticker],
+              price: next[ticker].price * (1 + shiftPct / 100),
+              change_pct: next[ticker].change_pct + shiftPct
+            };
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   const addTicker = () => {
     const t = newTicker.trim().toUpperCase();
@@ -99,7 +129,7 @@ export default function Dashboard() {
               <Link key={t} href={`/asset/${t}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', textDecoration:'none', padding:'6px 0', borderBottom:'1px solid var(--bg-border)' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 13 }}>{t}</span>
                 <div style={{ textAlign: 'right' }}>
-                  <span className="mono text-green" style={{ fontWeight: 700, fontSize: 13 }}>+{(v.change_pct ?? 0).toFixed(2)}%</span>
+                  <LiveValue className="mono text-green" style={{ fontWeight: 700, fontSize: 13 }} value={v.change_pct ?? 0} format="pct" />
                 </div>
               </Link>
             ))}
@@ -110,7 +140,7 @@ export default function Dashboard() {
             {losers.map(([t, v]) => (
               <Link key={t} href={`/asset/${t}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', textDecoration:'none', padding:'6px 0', borderBottom:'1px solid var(--bg-border)' }}>
                 <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 13 }}>{t}</span>
-                <span className="mono text-red" style={{ fontWeight: 700, fontSize: 13 }}>{(v.change_pct ?? 0).toFixed(2)}%</span>
+                <LiveValue className="mono text-red" style={{ fontWeight: 700, fontSize: 13 }} value={v.change_pct ?? 0} format="pct" />
               </Link>
             ))}
           </div>
@@ -159,14 +189,14 @@ export default function Dashboard() {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <span className="mono" style={{ fontWeight: 600 }}>
-                        {data ? `$${(data.price ?? 0).toFixed((data.price ?? 0) > 100 ? 2 : 4)}` : '—'}
+                        {data ? <LiveValue value={data.price ?? 0} format="usd" /> : '—'}
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       {data ? (
                         <span className={`badge ${isPos ? 'badge-green' : isNeg ? 'badge-red' : 'badge-muted'}`}>
                           {isPos ? <TrendingUp size={10} /> : isNeg ? <TrendingDown size={10} /> : null}
-                          {isPos ? '+' : ''}{data.change_pct.toFixed(2)}%
+                          <LiveValue value={data.change_pct} format="pct" />
                         </span>
                       ) : (
                         <span style={{ color: 'var(--text-muted)' }}>—</span>
