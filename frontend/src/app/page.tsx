@@ -105,7 +105,7 @@ export default function Dashboard() {
       <div className="page-container animate-fade-in" style={{ paddingTop: 24, paddingBottom: 40 }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div className="header-container">
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 800 }}>
               Market <span className="gradient-text">Dashboard</span>
@@ -121,7 +121,7 @@ export default function Dashboard() {
         </div>
 
         {/* Top movers */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+        <div className="top-movers-grid">
           <div className="card">
             <div className="section-title" style={{ color: 'var(--green)' }}>🚀 Top Ganadores</div>
             {gainers.length === 0 && <p style={{ color: 'var(--text-muted)', fontSize: 12 }}>Cargando...</p>}
@@ -147,7 +147,7 @@ export default function Dashboard() {
         </div>
 
         {/* Add ticker */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <div className="add-ticker-container">
           <input
             className="input" style={{ maxWidth: 200 }}
             placeholder="Agregar ticker (ej: TSLA)"
@@ -167,59 +167,61 @@ export default function Dashboard() {
             <span style={{ fontWeight: 700, fontSize: 13 }}>Watchlist</span>
             <span className="badge badge-accent">{watchlist.length} activos</span>
           </div>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Ticker</th>
-                <th className="mono" style={{ textAlign: 'right' }}>Precio</th>
-                <th style={{ textAlign: 'right' }}>Cambio 1D</th>
-                <th style={{ textAlign: 'right' }}>Análisis</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {watchlist.map(ticker => {
-                const data = prices[ticker];
-                const isPos = data && data.change_pct > 0;
-                const isNeg = data && data.change_pct < 0;
-                return (
-                  <tr key={ticker}>
-                    <td>
-                      <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{ticker}</div>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <span className="mono" style={{ fontWeight: 600 }}>
-                        {data ? <LiveValue value={data.price ?? 0} format="usd" /> : '—'}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      {data ? (
-                        <span className={`badge ${isPos ? 'badge-green' : isNeg ? 'badge-red' : 'badge-muted'}`}>
-                          {isPos ? <TrendingUp size={10} /> : isNeg ? <TrendingDown size={10} /> : null}
-                          <LiveValue value={data.change_pct} format="pct" />
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Ticker</th>
+                  <th className="mono" style={{ textAlign: 'right' }}>Precio</th>
+                  <th style={{ textAlign: 'right' }}>Cambio 1D</th>
+                  <th style={{ textAlign: 'right' }}>Análisis</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {watchlist.map(ticker => {
+                  const data = prices[ticker];
+                  const isPos = data && data.change_pct > 0;
+                  const isNeg = data && data.change_pct < 0;
+                  return (
+                    <tr key={ticker}>
+                      <td>
+                        <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{ticker}</div>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <span className="mono" style={{ fontWeight: 600 }}>
+                          {data ? <LiveValue value={data.price ?? 0} format="usd" /> : '—'}
                         </span>
-                      ) : (
-                        <span style={{ color: 'var(--text-muted)' }}>—</span>
-                      )}
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <Link href={`/asset/${ticker}`} className="btn btn-ghost" style={{ padding: '4px 10px', fontSize: 11 }}>
-                        Analizar →
-                      </Link>
-                    </td>
-                    <td style={{ width: 32 }}>
-                      <button onClick={() => removeTicker(ticker)} style={{
-                        background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)',
-                        padding: 4, borderRadius: 4, display: 'flex',
-                      }}>
-                        <X size={12} />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        {data ? (
+                          <span className={`badge ${isPos ? 'badge-green' : isNeg ? 'badge-red' : 'badge-muted'}`}>
+                            {isPos ? <TrendingUp size={10} /> : isNeg ? <TrendingDown size={10} /> : null}
+                            <LiveValue value={data.change_pct} format="pct" />
+                          </span>
+                        ) : (
+                          <span style={{ color: 'var(--text-muted)' }}>—</span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <Link href={`/asset/${ticker}`} className="btn btn-ghost" style={{ padding: '4px 10px', fontSize: 11 }}>
+                          Analizar →
+                        </Link>
+                      </td>
+                      <td style={{ width: 32 }}>
+                        <button onClick={() => removeTicker(ticker)} style={{
+                          background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)',
+                          padding: 4, borderRadius: 4, display: 'flex',
+                        }}>
+                          <X size={12} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Disclaimer */}

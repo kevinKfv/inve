@@ -20,7 +20,7 @@ export default function Navbar() {
       borderBottom: '1px solid var(--bg-border)',
       position: 'sticky', top: 0, zIndex: 50,
     }}>
-      <div className="page-container" style={{ display: 'flex', alignItems: 'center', height: 56, gap: 8 }}>
+      <div className="page-container" style={{ display: 'flex', alignItems: 'center', minHeight: 56, gap: 8, padding: '8px 16px', flexWrap: 'wrap' }}>
         {/* Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', marginRight: 16 }}>
           <div style={{
@@ -36,7 +36,7 @@ export default function Navbar() {
         </Link>
 
         {/* Nav links */}
-        <div style={{ display: 'flex', gap: 2 }}>
+        <div className="nav-links-container" style={{ display: 'flex', gap: 2 }}>
           {NAV.map(({ href, icon: Icon, label }) => {
             const active = path === href;
             return (
@@ -58,7 +58,7 @@ export default function Navbar() {
         <div style={{ flex: 1 }} />
 
         {/* Disclaimer badge */}
-        <span className="badge badge-yellow" style={{ fontSize: 10 }}>
+        <span className="badge badge-yellow nav-disclaimer" style={{ fontSize: 10 }}>
           ⚠ Solo educativo — No es asesoramiento financiero
         </span>
       </div>

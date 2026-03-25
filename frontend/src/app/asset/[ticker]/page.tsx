@@ -95,8 +95,8 @@ export default function AssetPage({ params }: { params: Params }) {
       <div className="page-container animate-fade-in" style={{ paddingTop: 20, paddingBottom: 40 }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="asset-header">
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
             <Link href="/" style={{ color: 'var(--text-muted)', display:'flex', alignItems:'center' }}><ArrowLeft size={16} /></Link>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -111,7 +111,7 @@ export default function AssetPage({ params }: { params: Params }) {
               <p style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{info?.name} · {info?.sector}</p>
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
+          <div style={{ textAlign: 'left', alignSelf: 'stretch' }}>
             <div className="mono" style={{ fontSize: 28, fontWeight: 800 }}>
               ${info?.price?.toFixed(info.price > 100 ? 2 : 4)}
             </div>
@@ -123,7 +123,7 @@ export default function AssetPage({ params }: { params: Params }) {
         </div>
 
         {/* Chart + Score */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 16, marginBottom: 16, alignItems: 'start' }}>
+        <div className="chart-grid">
           <div className="card" style={{ padding: '12px 16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <span className="section-title" style={{ margin: 0 }}>Gráfico de Precio</span>
@@ -157,7 +157,7 @@ export default function AssetPage({ params }: { params: Params }) {
 
         {/* Tab content */}
         {activeTab === 'technical' && ind && (
-          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 16, alignItems: 'start' }}>
+          <div className="tech-grid">
             {/* RSI Gauge */}
             <div className="card" style={{ textAlign: 'center' }}>
               <div className="section-title">RSI (14)</div>
@@ -165,7 +165,7 @@ export default function AssetPage({ params }: { params: Params }) {
             </div>
 
             {/* Indicators grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="two-col-grid" style={{ gap: 12 }}>
               {/* MACD */}
               <div className="card">
                 <div className="section-title">MACD (12/26/9)</div>
@@ -234,7 +234,7 @@ export default function AssetPage({ params }: { params: Params }) {
         )}
 
         {activeTab === 'fundamental' && info && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="two-col-grid">
             <div className="card">
               <div className="section-title">Valoración</div>
               <StatRow label="P/E Ratio (Trailing)" value={info.pe_ratio?.toFixed(2) ?? 'N/A'} />
@@ -264,7 +264,7 @@ export default function AssetPage({ params }: { params: Params }) {
         )}
 
         {activeTab === 'risk' && analysis?.risk && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="two-col-grid">
             {analysis.risk.atr_method && (
               <div className="card">
                 <div className="section-title">🎯 Método ATR (Recomendado)</div>
@@ -325,7 +325,7 @@ export default function AssetPage({ params }: { params: Params }) {
               </div>
             )}
             {mlSignal && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="two-col-grid">
                 <div className="card" style={{ textAlign: 'center' }}>
                   <div className="section-title">Señal del Modelo</div>
                   <div style={{
