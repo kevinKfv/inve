@@ -116,14 +116,12 @@ def scan_market(
     # Pre-cache OHLCV & info in bulk
     preload_scanner_data(tickers, period="3mo")
 
-    # Process concurrently using ThreadPoolExecutor to prevent sequential blocking from cache misses
+    # Process sequentially (very fast since data is preloaded in RAM)
     results = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-        futures = {executor.submit(_scan_single, t): t for t in tickers}
-        for future in concurrent.futures.as_completed(futures):
-            res = future.result()
-            if res and res["score"] >= min_score:
-                results.append(res)
+    for t in tickers:
+        res = _scan_single(t)
+        if res and res["score"] >= min_score:
+            results.append(res)
 
     # Sort by score descending
     results.sort(key=lambda x: x["score"], reverse=True)
