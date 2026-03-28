@@ -215,4 +215,21 @@ export const api = {
 
   quickRating: (ticker: string) =>
     apiFetch<ScanItem>(`/api/scanner/quick/${ticker}`),
+
+  alpacaAccount: () =>
+    apiFetch<{ cash: number; portfolio_value: number; buying_power: number }>('/api/alpaca/account'),
+
+  alpacaPositions: () =>
+    apiFetch<{ id: string; ticker: string; entry_price: number; current_price: number; quantity: number; pnl: number; pnl_pct: number }[]>('/api/alpaca/positions'),
+
+  alpacaOrder: (ticker: string, quantity: number, side: 'BUY' | 'SELL') =>
+    apiFetch<{ status: string; order_id: string }>('/api/alpaca/orders', {
+      method: 'POST',
+      body: JSON.stringify({ ticker, quantity, side }),
+    }),
+
+  alpacaClosePosition: (ticker: string) =>
+    apiFetch<{ status: string; closed: string }>(`/api/alpaca/positions/${ticker}`, {
+      method: 'DELETE',
+    }),
 };

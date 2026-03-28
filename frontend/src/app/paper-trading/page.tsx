@@ -20,102 +20,73 @@ const INITIAL_CAPITAL = 100_000;
 export default function PaperTradingPage() {
   const [positions, setPositions] = useState<Position[]>([]);
   const [cash, setCash] = useState(INITIAL_CAPITAL);
+  const [portfolioValue, setPortfolioValue] = useState(INITIAL_CAPITAL);
+  const [buyingPower, setBuyingPower] = useState(INITIAL_CAPITAL);
+
   const [ticker, setTicker] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [action, setAction] = useState<'BUY' | 'SELL'>('BUY');
-  const [tradeDate, setTradeDate] = useState(new Date().toISOString().split('T')[0]);
   const [error, setError] = useState('');
   const [priceLoading, setPriceLoading] = useState(false);
 
-  // Load from localStorage
-  useEffect(() => {
+  // Fetch initial data
+  const fetchData = async () => {
     try {
-      const saved = localStorage.getItem('paper_positions');
-      const savedCash = localStorage.getItem('paper_cash');
-      if (saved) setPositions(JSON.parse(saved));
-      if (savedCash) setCash(Number(savedCash));
-    } catch {}
-  }, []);
-
-  const save = (pos: Position[], c: number) => {
-    localStorage.setItem('paper_positions', JSON.stringify(pos));
-    localStorage.setItem('paper_cash', String(c));
+      const acc = await api.alpacaAccount();
+      const pos = await api.alpacaPositions();
+      setCash(acc.cash);
+      setPortfolioValue(acc.portfolio_value);
+      setBuyingPower(acc.buying_power);
+      // Maps API response to internal Position interface. 
+      // API returns: id, ticker, entry_price, current_price, quantity, pnl, pnl_pct
+      const mappedPositions: Position[] = pos.map((p: any) => ({
+        id: p.id,
+        ticker: p.ticker,
+        entry_price: p.entry_price,
+        current_price: p.current_price,
+        quantity: p.quantity,
+        entry_date: new Date().toISOString().split('T')[0], // Approximation Since Alpaca /positions doesn't return date easily
+        pnl: p.pnl,
+        pnl_pct: p.pnl_pct,
+      }));
+      setPositions(mappedPositions);
+    } catch (e: any) {
+      console.error(e);
+      // Fallback or handle error quietly. 
+      // If the API key is not set, we can show an error on screen.
+      setError(e.message || "Error conectando con Alpaca API.");
+    }
   };
 
-  const refreshPrices = async () => {
-    if (!positions.length) return;
-    const tickers = [...new Set(positions.map(p => p.ticker))];
-    try {
-      const prices = await api.watchlist(tickers);
-      setPositions(prev => {
-        const updated = prev.map(pos => {
-          const cp = prices[pos.ticker]?.price ?? pos.current_price ?? pos.entry_price;
-          const pnl = (cp - pos.entry_price) * pos.quantity;
-          const pnl_pct = ((cp - pos.entry_price) / pos.entry_price) * 100;
-          return { ...pos, current_price: cp, pnl, pnl_pct };
-        });
-        return updated;
-      });
-    } catch {}
-  };
-
-  useEffect(() => { refreshPrices(); }, [positions.length]);
+  useEffect(() => { fetchData(); }, []);
 
   const executeTrade = async () => {
     setError(''); setPriceLoading(true);
     const t = ticker.trim().toUpperCase();
     if (!t) { setError('Ingresá un ticker.'); setPriceLoading(false); return; }
-
     try {
-      let price = 0;
-      let actualDate = tradeDate;
-      const todayStr = new Date().toISOString().split('T')[0];
-
-      if (tradeDate === todayStr) {
-        const prices = await api.watchlist([t]);
-        price = prices[t]?.price || 0;
-      } else {
-        const history = await api.priceOnDate(t, tradeDate);
-        price = history.price;
-        actualDate = history.date;
-      }
-
-      if (!price) throw new Error(`No se pudo obtener el precio para la fecha seleccionada.`);
-
-      const cost = price * quantity;
-
-      if (action === 'BUY') {
-        if (cost > cash) { setError(`Fondos insuficientes. Necesitás $${cost.toFixed(2)}, tenés $${cash.toFixed(2)}.`); return; }
-        const newPos: Position = {
-          id: Date.now().toString(), ticker: t, entry_price: price,
-          quantity, entry_date: actualDate,
-          current_price: price, pnl: 0, pnl_pct: 0,
-        };
-        const updated = [...positions, newPos];
-        const newCash = cash - cost;
-        setPositions(updated); setCash(newCash); save(updated, newCash);
-      } else {
-        const pos = positions.find(p => p.ticker === t);
-        if (!pos) { setError(`No tenés posición en ${t}.`); return; }
-        const proceeds = price * Math.min(quantity, pos.quantity);
-        const updated = positions.filter(p => p.id !== pos.id);
-        const newCash = cash + proceeds;
-        setPositions(updated); setCash(newCash); save(updated, newCash);
-      }
+      await api.alpacaOrder(t, quantity, action);
       setTicker('');
-    } catch (e: any) { setError(e.message); }
-    finally { setPriceLoading(false); }
+      setTimeout(fetchData, 2000); // Wait for order to fill
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setPriceLoading(false);
+    }
   };
 
-  const reset = () => {
-    setPositions([]); setCash(INITIAL_CAPITAL);
-    localStorage.removeItem('paper_positions'); localStorage.removeItem('paper_cash');
+  const closePos = async (tickerToClose: string) => {
+    try {
+      await api.alpacaClosePosition(tickerToClose);
+      setTimeout(fetchData, 2000);
+    } catch (e: any) {
+      console.error(e);
+      setError(e.message);
+    }
   };
 
-  const portfolioValue = positions.reduce((sum, p) => sum + (p.current_price ?? p.entry_price) * p.quantity, 0);
-  const totalPnL = positions.reduce((sum, p) => sum + (p.pnl ?? 0), 0);
-  const totalValue = cash + portfolioValue;
-  const totalReturn = ((totalValue - INITIAL_CAPITAL) / INITIAL_CAPITAL) * 100;
+  const totalAccountPnL = portfolioValue - INITIAL_CAPITAL;
+  const totalReturn = (totalAccountPnL / INITIAL_CAPITAL) * 100;
 
   return (
     <>
@@ -123,23 +94,23 @@ export default function PaperTradingPage() {
       <div className="page-container animate-fade-in" style={{ paddingTop: 24, paddingBottom: 40 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
           <h1 style={{ fontSize: 22, fontWeight: 800 }}>
-            <span className="gradient-text">Paper Trading</span> Simulator
+            <span className="gradient-text">Paper Trading</span> Alpaca
           </h1>
-          <button className="btn btn-ghost" onClick={reset} style={{ fontSize: 11 }}>
-            🔄 Reset (${INITIAL_CAPITAL.toLocaleString()})
+          <button className="btn btn-ghost" onClick={fetchData} style={{ fontSize: 11 }}>
+            🔄 Refrescar
           </button>
         </div>
         <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 20 }}>
-          Modo simulación — operá con dinero virtual sin riesgo real.
+          Operá en vivo con dinero virtual conectado a tu cuenta de Alpaca Paper Trading.
         </p>
 
         {/* Portfolio stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
           {[
-            { label: 'Efectivo disponible', value: `$${cash.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, color: 'var(--accent)' },
-            { label: 'Valor Posiciones', value: `$${portfolioValue.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, color: 'var(--text-primary)' },
-            { label: 'Valor Total', value: `$${totalValue.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, color: 'var(--text-primary)' },
-            { label: 'P&L Total', value: `${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)} (${totalReturn.toFixed(2)}%)`, color: totalReturn >= 0 ? 'var(--green)' : 'var(--red)' },
+            { label: 'Poder de Compra', value: `$${buyingPower.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, color: 'var(--accent)' },
+            { label: 'Efectivo', value: `$${cash.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, color: 'var(--text-primary)' },
+            { label: 'Valor Total', value: `$${portfolioValue.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, color: 'var(--text-primary)' },
+            { label: 'P&L Total', value: `${totalAccountPnL >= 0 ? '+' : ''}$${totalAccountPnL.toFixed(2)} (${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%)`, color: totalAccountPnL >= 0 ? 'var(--green)' : 'var(--red)' },
           ].map(kpi => (
             <div key={kpi.label} className="card" style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{kpi.label}</p>
@@ -159,10 +130,6 @@ export default function PaperTradingPage() {
             <div>
               <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Cantidad</label>
               <input className="input" type="number" style={{ width: 100 }} value={quantity} min={1} onChange={e => setQuantity(Number(e.target.value))} />
-            </div>
-            <div>
-              <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Fecha de compra</label>
-              <input className="input" type="date" style={{ width: 150 }} value={tradeDate} max={new Date().toISOString().split('T')[0]} onChange={e => setTradeDate(e.target.value)} />
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
               <button onClick={() => setAction('BUY')} className="btn" style={{ background: action === 'BUY' ? 'var(--green)' : 'var(--bg-border)', color: action === 'BUY' ? '#000' : 'var(--text-secondary)' }}>
@@ -206,10 +173,10 @@ export default function PaperTradingPage() {
                         {(p.pnl ?? 0) >= 0 ? '+' : ''}${(p.pnl ?? 0).toFixed(2)} ({(p.pnl_pct ?? 0).toFixed(2)}%)
                       </span>
                     </td>
-                    <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>{p.entry_date}</td>
+                    <td style={{ fontSize: 11, color: 'var(--text-muted)' }}>-</td>
                     <td>
                       <button className="btn btn-danger" style={{ padding: '3px 8px', fontSize: 10 }}
-                        onClick={() => { const u = positions.filter(x => x.id !== p.id); setPositions(u); save(u, cash); }}>
+                        onClick={() => closePos(p.ticker)}>
                         <Trash2 size={10} />
                       </button>
                     </td>
