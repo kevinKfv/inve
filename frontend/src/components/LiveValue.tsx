@@ -1,13 +1,14 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, CSSProperties } from 'react';
 
 interface Props {
   value: number;
   format?: 'usd' | 'pct';
   className?: string;
+  style?: CSSProperties;
 }
 
-export default function LiveValue({ value, format, className = '' }: Props) {
+export default function LiveValue({ value, format, className = '', style }: Props) {
   const [flashClass, setFlashClass] = useState('');
   const prevValue = useRef(value);
 
@@ -32,7 +33,7 @@ export default function LiveValue({ value, format, className = '' }: Props) {
   }
 
   return (
-    <span className={`${className} ${flashClass} transition-colors duration-300 px-1 rounded`}>
+    <span className={`${className} ${flashClass} transition-colors duration-300 px-1 rounded`} style={style}>
       {displayStr}
     </span>
   );
