@@ -137,7 +137,7 @@ export default function AlertsPage() {
                   <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Usuario (@username)</label>
                   <input className="input" value={telegramUser} onChange={e => setTelegramUser(e.target.value)} placeholder="@mi_usuario" style={{ marginBottom: 6 }} />
                   <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                    Asegúrate de enviar un mensaje a <a href="https://t.me/CallMeBot_API_bot" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>@CallMeBot_API_bot</a> para autorizarlo.
+                    Asegúrate de enviar el mensaje <span style={{ fontFamily: 'monospace' }}>/start</span> a <a href="https://t.me/CallMeBot_txtbot" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>@CallMeBot_txtbot</a> para autorizarlo.
                   </p>
                 </div>
               )}

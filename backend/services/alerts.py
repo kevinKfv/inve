@@ -69,23 +69,32 @@ def evaluate_alerts(ticker: str, df, current_price: float) -> list:
         cond = alert["condition"]
         thr = alert["threshold"]
         fired = False
+        triggered_val = None
 
         if cond == "rsi_below" and rsi_val is not None and rsi_val < thr:
             fired = True
+            triggered_val = f"RSI Actual: {rsi_val:.2f}"
         elif cond == "rsi_above" and rsi_val is not None and rsi_val > thr:
             fired = True
+            triggered_val = f"RSI Actual: {rsi_val:.2f}"
         elif cond == "price_below" and current_price < thr:
             fired = True
+            triggered_val = f"Precio Actual: ${current_price:.2f}"
         elif cond == "price_above" and current_price > thr:
             fired = True
+            triggered_val = f"Precio Actual: ${current_price:.2f}"
         elif cond == "macd_cross_up" and macd_hist is not None and macd_hist > 0:
             fired = True
+            triggered_val = f"MACD Histograma: {macd_hist:.4f}"
         elif cond == "macd_cross_down" and macd_hist is not None and macd_hist < 0:
             fired = True
+            triggered_val = f"MACD Histograma: {macd_hist:.4f}"
 
         if fired and not alert["triggered"]:
             alert["triggered"] = True
             alert["triggered_at"] = datetime.utcnow().isoformat()
+            if triggered_val:
+                alert["triggered_value"] = triggered_val
             triggered.append(alert)
             threading.Thread(target=_send_notifications, args=(alert,)).start()
 
@@ -105,11 +114,18 @@ def _default_description(condition: str, ticker: str, threshold: float) -> str:
 
 def _send_notifications(alert: dict):
     msg = alert.get("description", "Alerta disparada")
+    if "triggered_value" in alert:
+        msg += f"\n👉 {alert['triggered_value']}"
+
     if alert.get("telegram_user"):
         user = alert["telegram_user"].replace("@", "")
         if user:
             try:
-                requests.get(f"https://api.callmebot.com/text.php?user=@{user}&text={msg}", timeout=5)
+                requests.get(
+                    "https://api.callmebot.com/text.php",
+                    params={"user": f"@{user}", "text": msg},
+                    timeout=5
+                )
             except Exception:
                 pass
     
@@ -117,6 +133,10 @@ def _send_notifications(alert: dict):
         phone = alert["whatsapp_phone"]
         apikey = alert["whatsapp_apikey"]
         try:
-            requests.get(f"https://api.callmebot.com/whatsapp.php?phone={phone}&text={msg}&apikey={apikey}", timeout=5)
+            requests.get(
+                "https://api.callmebot.com/whatsapp.php",
+                params={"phone": phone, "text": msg, "apikey": apikey},
+                timeout=5
+            )
         except Exception:
             pass
