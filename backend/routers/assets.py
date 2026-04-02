@@ -163,6 +163,10 @@ async def get_full_analysis(ticker: str, period: str = Query("1y")):
         risk_data = risk_svc.compute_risk_levels(df_6m)
         reg = regime_svc.detect_regime(df)
 
+        # Evaluate pending alerts for this ticker
+        from services.alerts import evaluate_alerts
+        evaluate_alerts(ticker, df, info.get("price", 0))
+
         return {
             "ticker": ticker.upper(),
             "info": info,
