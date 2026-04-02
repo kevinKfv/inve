@@ -165,7 +165,10 @@ async def get_full_analysis(ticker: str, period: str = Query("1y")):
 
         # Evaluate pending alerts for this ticker
         from services.alerts import evaluate_alerts
-        evaluate_alerts(ticker, df, info.get("price", 0))
+        current_price = info.get("price")
+        if not current_price and not df.empty:
+            current_price = float(df["close"].iloc[-1])
+        evaluate_alerts(ticker, df, current_price or 0.0)
 
         return {
             "ticker": ticker.upper(),
