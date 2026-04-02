@@ -25,6 +25,9 @@ class AlertRequest(BaseModel):
     condition: str
     threshold: float
     description: str = ""
+    telegram_user: str = ""
+    whatsapp_phone: str = ""
+    whatsapp_apikey: str = ""
 
 
 @router.get("/")
@@ -41,6 +44,9 @@ async def create(req: AlertRequest):
         condition=req.condition,
         threshold=req.threshold,
         description=req.description,
+        telegram_user=req.telegram_user,
+        whatsapp_phone=req.whatsapp_phone,
+        whatsapp_apikey=req.whatsapp_apikey,
     )
     return alert
 

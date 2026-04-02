@@ -21,6 +21,42 @@ export default function AlertsPage() {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Messenger integration state
+  const [sendTelegram, setSendTelegram] = useState(false);
+  const [telegramUser, setTelegramUser] = useState('');
+  const [sendWhatsapp, setSendWhatsapp] = useState(false);
+  const [whatsappPhone, setWhatsappPhone] = useState('');
+  const [whatsappApi, setWhatsappApi] = useState('');
+
+  // Cargar estado inicial desde localStorage al montar
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('alertsFormState');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.ticker) setTicker(parsed.ticker);
+        if (parsed.condition) setCondition(parsed.condition);
+        if (parsed.threshold !== undefined) setThreshold(parsed.threshold);
+        if (parsed.description) setDescription(parsed.description);
+        if (parsed.sendTelegram !== undefined) setSendTelegram(parsed.sendTelegram);
+        if (parsed.telegramUser) setTelegramUser(parsed.telegramUser);
+        if (parsed.sendWhatsapp !== undefined) setSendWhatsapp(parsed.sendWhatsapp);
+        if (parsed.whatsappPhone) setWhatsappPhone(parsed.whatsappPhone);
+        if (parsed.whatsappApi) setWhatsappApi(parsed.whatsappApi);
+      }
+    } catch (e) {}
+  }, []);
+
+  // Guardar estado en localStorage cuando cambia
+  useEffect(() => {
+    const state = {
+      ticker, condition, threshold, description,
+      sendTelegram, telegramUser,
+      sendWhatsapp, whatsappPhone, whatsappApi
+    };
+    localStorage.setItem('alertsFormState', JSON.stringify(state));
+  }, [ticker, condition, threshold, description, sendTelegram, telegramUser, sendWhatsapp, whatsappPhone, whatsappApi]);
+
   const fetchAlerts = async () => {
     const data = await api.getAlerts();
     setAlerts(data.alerts);
@@ -31,7 +67,12 @@ export default function AlertsPage() {
   const create = async () => {
     setLoading(true);
     try {
-      await api.createAlert({ ticker, condition, threshold, description });
+      await api.createAlert({ 
+        ticker, condition, threshold, description,
+        telegram_user: sendTelegram ? telegramUser : '',
+        whatsapp_phone: sendWhatsapp ? whatsappPhone : '',
+        whatsapp_apikey: sendWhatsapp ? whatsappApi : ''
+      });
       await fetchAlerts();
       setDescription('');
     } catch (e) { console.error(e); }
@@ -80,6 +121,49 @@ export default function AlertsPage() {
             <div>
               <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Descripción (opcional)</label>
               <input className="input" value={description} onChange={e => setDescription(e.target.value)} placeholder="Mi alerta..." />
+            </div>
+          </div>
+
+          <div className="section-title" style={{ marginTop: 16, fontSize: 13 }}>Notificaciones (vía CallMeBot)</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16, marginBottom: 16 }}>
+            {/* Telegram Config */}
+            <div style={{ background: 'var(--bg-surface)', padding: 12, borderRadius: 8, border: '1px solid var(--bg-border)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8, cursor: 'pointer' }}>
+                <input type="checkbox" checked={sendTelegram} onChange={e => setSendTelegram(e.target.checked)} style={{ width: 14, height: 14 }} />
+                📱 Enviar por Telegram
+              </label>
+              {sendTelegram && (
+                <div className="animate-fade-in" style={{ marginTop: 8 }}>
+                  <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Usuario (@username)</label>
+                  <input className="input" value={telegramUser} onChange={e => setTelegramUser(e.target.value)} placeholder="@mi_usuario" style={{ marginBottom: 6 }} />
+                  <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                    Asegúrate de enviar un mensaje a <a href="https://t.me/CallMeBot_API_bot" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>@CallMeBot_API_bot</a> para autorizarlo.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* WhatsApp Config */}
+            <div style={{ background: 'var(--bg-surface)', padding: 12, borderRadius: 8, border: '1px solid var(--bg-border)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8, cursor: 'pointer' }}>
+                <input type="checkbox" checked={sendWhatsapp} onChange={e => setSendWhatsapp(e.target.checked)} style={{ width: 14, height: 14 }} />
+                💬 Enviar por WhatsApp
+              </label>
+              {sendWhatsapp && (
+                <div className="animate-fade-in" style={{ marginTop: 8, display: 'grid', gap: 8 }}>
+                  <div>
+                    <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Teléfono (con + y código de país)</label>
+                    <input className="input" value={whatsappPhone} onChange={e => setWhatsappPhone(e.target.value)} placeholder="+34123456789" />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>CallMeBot API Key</label>
+                    <input className="input" value={whatsappApi} onChange={e => setWhatsappApi(e.target.value)} placeholder="012345" />
+                  </div>
+                  <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                    Envía <span style={{ fontFamily: 'monospace' }}>I allow callmebot to send me messages</span> al <a href="https://api.callmebot.com/whatsapp.php" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>bot de WhatsApp</a>.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

@@ -5,6 +5,8 @@ Stores conditions and evaluates them against latest indicator values.
 """
 
 import uuid
+import threading
+import requests
 from datetime import datetime
 from typing import Optional
 from services.indicators import compute_rsi, compute_macd, _last_valid
@@ -15,7 +17,8 @@ _alerts: dict = {}
 
 
 def create_alert(ticker: str, condition: str, threshold: float,
-                 description: str = "") -> dict:
+                 description: str = "", telegram_user: str = "",
+                 whatsapp_phone: str = "", whatsapp_apikey: str = "") -> dict:
     """
     Create a new price/indicator alert.
     condition: "rsi_below" | "rsi_above" | "price_below" | "price_above" | "macd_cross_up" | "macd_cross_down"
@@ -27,6 +30,9 @@ def create_alert(ticker: str, condition: str, threshold: float,
         "condition": condition,
         "threshold": threshold,
         "description": description or _default_description(condition, ticker, threshold),
+        "telegram_user": telegram_user,
+        "whatsapp_phone": whatsapp_phone,
+        "whatsapp_apikey": whatsapp_apikey,
         "created_at": datetime.utcnow().isoformat(),
         "triggered": False,
         "triggered_at": None,
@@ -81,6 +87,7 @@ def evaluate_alerts(ticker: str, df, current_price: float) -> list:
             alert["triggered"] = True
             alert["triggered_at"] = datetime.utcnow().isoformat()
             triggered.append(alert)
+            threading.Thread(target=_send_notifications, args=(alert,)).start()
 
     return triggered
 
@@ -95,3 +102,21 @@ def _default_description(condition: str, ticker: str, threshold: float) -> str:
         "macd_cross_down": f"{ticker} MACD cruza a la baja",
     }
     return descriptions.get(condition, f"Alerta para {ticker}")
+
+def _send_notifications(alert: dict):
+    msg = alert.get("description", "Alerta disparada")
+    if alert.get("telegram_user"):
+        user = alert["telegram_user"].replace("@", "")
+        if user:
+            try:
+                requests.get(f"https://api.callmebot.com/text.php?user=@{user}&text={msg}", timeout=5)
+            except Exception:
+                pass
+    
+    if alert.get("whatsapp_phone") and alert.get("whatsapp_apikey"):
+        phone = alert["whatsapp_phone"]
+        apikey = alert["whatsapp_apikey"]
+        try:
+            requests.get(f"https://api.callmebot.com/whatsapp.php?phone={phone}&text={msg}&apikey={apikey}", timeout=5)
+        except Exception:
+            pass

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import { api, OptimizationResult } from '@/lib/api';
 import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceDot } from 'recharts';
@@ -12,6 +12,28 @@ export default function PortfolioPage() {
   const [result, setResult] = useState<OptimizationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Cargar estado inicial desde localStorage al montar
+  useEffect(() => {
+    try {
+      const savedTickers = localStorage.getItem('portfolioTickers');
+      const savedPeriod = localStorage.getItem('portfolioPeriod');
+      if (savedTickers) {
+        const parsed = JSON.parse(savedTickers);
+        if (Array.isArray(parsed) && parsed.length > 0) setTickers(parsed);
+      }
+      if (savedPeriod) setPeriod(savedPeriod);
+    } catch (e) {}
+  }, []);
+
+  // Guardar estado en localStorage cuando cambia
+  useEffect(() => {
+    localStorage.setItem('portfolioTickers', JSON.stringify(tickers));
+  }, [tickers]);
+
+  useEffect(() => {
+    localStorage.setItem('portfolioPeriod', period);
+  }, [period]);
 
   const add = () => {
     const t = newTicker.trim().toUpperCase();

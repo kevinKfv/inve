@@ -204,7 +204,7 @@ export const api = {
 
   getAlerts: () => apiFetch<{ alerts: Alert[] }>('/api/alerts/'),
 
-  createAlert: (data: { ticker: string; condition: string; threshold: number; description?: string }) =>
+  createAlert: (data: { ticker: string; condition: string; threshold: number; description?: string; telegram_user?: string; whatsapp_phone?: string; whatsapp_apikey?: string }) =>
     apiFetch<Alert>('/api/alerts/create', { method: 'POST', body: JSON.stringify(data) }),
 
   deleteAlert: (id: string) =>
