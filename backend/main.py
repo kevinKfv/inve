@@ -64,6 +64,37 @@ app.include_router(alerts.router,      prefix="/api/alerts",     tags=["Alerts"]
 app.include_router(scanner.router,                              tags=["Scanner"])
 app.include_router(alpaca.router,      prefix="/api/alpaca",     tags=["Alpaca"])
 
+import threading
+import time
+
+def background_alert_evaluator():
+    from services.alerts import get_alerts, evaluate_alerts
+    from services.market_data import get_ticker_info, get_ohlcv
+    while True:
+        try:
+            alerts = get_alerts()
+            pending = [a for a in alerts if a["active"] and not a["triggered"]]
+            tickers = set(a["ticker"] for a in pending)
+            for t in tickers:
+                try:
+                    df = get_ohlcv(t, "6mo", "1d")
+                    info = get_ticker_info(t)
+                    current_price = info.get("price")
+                    if not current_price and not df.empty:
+                        current_price = float(df["close"].iloc[-1])
+                    if current_price:
+                        evaluate_alerts(t, df, current_price)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        time.sleep(60)
+
+@app.on_event("startup")
+def start_background_tasks():
+    thread = threading.Thread(target=background_alert_evaluator, daemon=True)
+    thread.start()
+
 
 @app.get("/", tags=["Health"])
 async def root():
