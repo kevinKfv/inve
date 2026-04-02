@@ -7,6 +7,7 @@ Stores conditions and evaluates them against latest indicator values.
 import uuid
 import threading
 import requests
+import os
 from datetime import datetime
 from typing import Optional
 from services.indicators import compute_rsi, compute_macd, _last_valid
@@ -118,12 +119,13 @@ def _send_notifications(alert: dict):
         msg += f"\n👉 {alert['triggered_value']}"
 
     if alert.get("telegram_user"):
-        user = alert["telegram_user"].replace("@", "")
-        if user:
+        chat_id = alert["telegram_user"].replace("@", "").strip()
+        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+        if chat_id and bot_token:
             try:
                 requests.get(
-                    "https://api.callmebot.com/text.php",
-                    params={"user": f"@{user}", "text": msg},
+                    f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                    params={"chat_id": chat_id, "text": msg},
                     timeout=5
                 )
             except Exception:

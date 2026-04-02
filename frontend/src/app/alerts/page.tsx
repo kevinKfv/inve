@@ -134,10 +134,10 @@ export default function AlertsPage() {
               </label>
               {sendTelegram && (
                 <div className="animate-fade-in" style={{ marginTop: 8 }}>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>Usuario (@username)</label>
-                  <input className="input" value={telegramUser} onChange={e => setTelegramUser(e.target.value)} placeholder="@mi_usuario" style={{ marginBottom: 6 }} />
+                  <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 4 }}>ID de Chat Telegram</label>
+                  <input className="input" value={telegramUser} onChange={e => setTelegramUser(e.target.value)} placeholder="Ej: 123456789" style={{ marginBottom: 6 }} />
                   <p style={{ fontSize: 10, color: 'var(--text-muted)' }}>
-                    Asegúrate de enviar el mensaje <span style={{ fontFamily: 'monospace' }}>/start</span> a <a href="https://t.me/CallMeBot_txtbot" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>@CallMeBot_txtbot</a> para autorizarlo.
+                    Búscalo enviándole cualquier mensaje a <a href="https://t.me/userinfobot" target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>@userinfobot</a>.
                   </p>
                 </div>
               )}
