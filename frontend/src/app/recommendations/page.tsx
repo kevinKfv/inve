@@ -1,5 +1,6 @@
 'use client';
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import PageHelp from '@/components/PageHelp';
 import { api, ScanItem, ScanResult } from '@/lib/api';
