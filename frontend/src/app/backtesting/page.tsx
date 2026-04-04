@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
+import PageHelp from '@/components/PageHelp';
 import { api, BacktestResult } from '@/lib/api';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts';
 import { Loader2 } from 'lucide-react';
@@ -47,6 +48,17 @@ export default function BacktestingPage() {
         <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 20 }}>
           Testea estrategias con datos históricos reales. Los resultados pasados no garantizan resultados futuros.
         </p>
+
+        <PageHelp 
+          title="💡 Glosario de Backtesting"
+          terms={[
+            { term: "Backtesting", definition: "Aplicar una estrategia comercial o modelo analítico a datos históricos para ver la precisión con la que hubiera funcionado." },
+            { term: "SMA Crossover / Cruce de Medias", definition: "Estrategia que compra cuando una media móvil rápida (ej. 20 días) cruza hacia arriba una media lenta (ej. 50 días), y vende cuando cruza hacia abajo." },
+            { term: "RSI Mean Reversion", definition: "Estrategia que asume que el precio volverá a su media. Compra cuando el activo está muy barato (Sobrevendido) y vende cuando está muy caro (Sobrecomprado)." },
+            { term: "Max Drawdown", definition: "La caída máxima en el capital desde el punto más alto hasta el más bajo. Mide el riesgo de pérdida." },
+            { term: "Buy & Hold", definition: "La estrategia de simplemente comprar el activo el día uno y no hacer nada más (ideal para comparar si tu estrategia de trading vale la pena)." }
+          ]} 
+        />
 
         {/* Config */}
         <div className="card" style={{ marginBottom: 20 }}>

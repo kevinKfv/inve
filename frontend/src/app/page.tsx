@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import LiveValue from '@/components/LiveValue';
+import PageHelp from '@/components/PageHelp';
 import { api } from '@/lib/api';
 import { TrendingUp, TrendingDown, RefreshCw, Search, Plus, X } from 'lucide-react';
 
@@ -105,6 +106,15 @@ export default function Dashboard() {
       <div className="page-container animate-fade-in" style={{ paddingTop: 24, paddingBottom: 40 }}>
 
         {/* Header */}
+        <PageHelp 
+          terms={[
+            { term: "Dashboard", definition: "Panel principal que resume el estado general de los mercados y los activos que sigues." },
+            { term: "Watchlist", definition: "Lista personalizada donde puedes agregar los activos financieros que deseas monitorear regularmente." },
+            { term: "Top Ganadores / Perdedores", definition: "Activos de tu watchlist con el mayor cambio positivo o negativo en el día de hoy." },
+            { term: "Cambio 1D", definition: "Variación porcentual del precio del activo en el último día (24h) de cotización." },
+          ]} 
+        />
+
         <div className="header-container">
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 800 }}>

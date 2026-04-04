@@ -1,7 +1,7 @@
 'use client';
 import { useState, useCallback } from 'react';
-import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import PageHelp from '@/components/PageHelp';
 import { api, ScanItem, ScanResult } from '@/lib/api';
 import {
   TrendingUp, TrendingDown, Minus, RefreshCw, Loader2,
@@ -145,6 +145,14 @@ export default function RecommendationsPage() {
             por Investment Score (0-100) en tres categorías.
           </p>
         </div>
+
+        <PageHelp 
+          title="💡 Glosario de Recomendaciones"
+          terms={[
+            { term: "Investment Score", definition: "Un puntaje de 0 a 100 creado por el modelo. A mayor puntaje (ej. 70+), más señales coinciden en que es buen momento para comprar." },
+            { term: "Top Picks", definition: "Los activos con los mejores puntajes actuales. Considerados las mejores oportunidades por nuestro algoritmo combinando técnico y fundamental." }
+          ]} 
+        />
 
         {/* Disclaimer */}
         <div style={{

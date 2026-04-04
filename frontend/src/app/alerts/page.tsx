@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Navbar from '@/components/Navbar';
 import { api, Alert } from '@/lib/api';
+import PageHelp from '@/components/PageHelp';
 import { Bell, Plus, Trash2, CheckCircle, Clock } from 'lucide-react';
 
 const CONDITIONS = [
@@ -97,6 +97,15 @@ export default function AlertsPage() {
         <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 20 }}>
           Las alertas se evalúan al acceder a la página de análisis del activo.
         </p>
+
+        <PageHelp 
+          title="💡 Glosario de Alertas"
+          terms={[
+            { term: "Condición / Umbral", definition: "El criterio técnico que evalúa el sistema. Por ejemplo: 'RSI menor a 30' significa que quieres que se te notifique cuando ese activo entre en zona de sobreventa." },
+            { term: "Cruce de MACD", definition: "Cuando la línea MACD cruza por encima de la línea de señal (Alcista: posible suba) o por debajo (Bajista: posible caída)." },
+            { term: "Notificaciones Push", definition: "Integración con bots en Telegram y WhatsApp. Solo se te enviará el mensaje cuando visites la página localmente y se detecte que la alerta se disparó." }
+          ]} 
+        />
 
         {/* Create form */}
         <div className="card" style={{ marginBottom: 24 }}>

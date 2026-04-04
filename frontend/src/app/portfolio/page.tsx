@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
+import PageHelp from '@/components/PageHelp';
 import { api, OptimizationResult } from '@/lib/api';
 import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceDot } from 'recharts';
 import { Loader2, Plus, X } from 'lucide-react';
@@ -62,6 +63,16 @@ export default function PortfolioPage() {
         <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 20 }}>
           Optimización de Markowitz — Frontera Eficiente · Máximo Sharpe · Mínima Volatilidad
         </p>
+
+        <PageHelp 
+          title="💡 Glosario de Portfolio"
+          terms={[
+            { term: "Frontera Eficiente", definition: "Gráfico que muestra los portafolios óptimos que ofrecen el mayor rendimiento esperado para un nivel de riesgo (volatilidad) dado." },
+            { term: "Máximo Sharpe", definition: "El portafolio que te da el mejor rendimiento en relación al riesgo que estás tomando (optimiza la relación riesgo/beneficio)." },
+            { term: "Mínima Volatilidad", definition: "El portafolio más conservador posible con los activos elegidos, buscando el menor riesgo." },
+            { term: "Matriz de Correlación", definition: "Muestra cómo se mueven los activos entre sí. Ayuda a diversificar: si un activo cae, otro no correlacionado podría subir." }
+          ]} 
+        />
 
         {/* Controls */}
         <div className="card" style={{ marginBottom: 20 }}>

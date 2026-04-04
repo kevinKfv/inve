@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
+import PageHelp from '@/components/PageHelp';
 import { api } from '@/lib/api';
 import { Plus, Trash2, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 
@@ -132,6 +133,16 @@ export default function PaperTradingPage() {
         <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 20 }}>
           Modo simulación — operá con dinero virtual sin riesgo real.
         </p>
+
+        <PageHelp 
+          title="💡 Glosario de Paper Trading"
+          terms={[
+            { term: "Paper Trading", definition: "Operar en mercados financieros con dinero virtual simulado, para aprender o probar estrategias sin arriesgar capital real." },
+            { term: "Efectivo Disponible", definition: "El saldo en tu cuenta virtual listo para ser usado en nuevas operaciones (cash)." },
+            { term: "P&L Total (Profit and Loss)", definition: "Ganancia o pérdida total acumulada de toda tu cartera en dólares y porcentaje." },
+            { term: "Reset", definition: "Reinicia tu simulador borrando todo historial y volviendo a tu capital inicial." }
+          ]} 
+        />
 
         {/* Portfolio stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>

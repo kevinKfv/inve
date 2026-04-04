@@ -5,6 +5,7 @@ import CandlestickChart from '@/components/CandlestickChart';
 import RSIGauge from '@/components/RSIGauge';
 import ScoreCard from '@/components/ScoreCard';
 import SignalBadges from '@/components/SignalBadges';
+import PageHelp from '@/components/PageHelp';
 import { api, FullAnalysis, MLSignal, Candle } from '@/lib/api';
 import { TrendingUp, TrendingDown, ArrowLeft, Loader2, Brain, Shield } from 'lucide-react';
 import Link from 'next/link';
@@ -95,6 +96,17 @@ export default function AssetPage({ params }: { params: Params }) {
       <div className="page-container animate-fade-in" style={{ paddingTop: 20, paddingBottom: 40 }}>
 
         {/* Header */}
+        <PageHelp 
+          title="💡 Glosario del Análisis"
+          terms={[
+            { term: "RSI (Relative Strength Index)", definition: "Indicador que mide la velocidad y magnitud de los cambios de precio. >70 indica sobrecompra, <30 sobreventa." },
+            { term: "MACD", definition: "Muestra la relación entre dos medias móviles para identificar la dirección y fuerza de la tendencia." },
+            { term: "Bollinger Bands", definition: "Bandas de volatilidad que miden si el precio está estadísticamente alto o bajo en relación al promedio." },
+            { term: "SMA / EMA", definition: "Medias Móviles Simples y Exponenciales. Suavizan el precio para identificar tendencias de corto y largo plazo." },
+            { term: "ADX y ATR", definition: "ADX mide la fuerza de una tendencia. ATR mide la volatilidad histórica en términos monetarios absolutos." },
+            { term: "P/E y EPS", definition: "Price/Earnings es la relación precio-ganancia. EPS es la ganancia por acción de la empresa según sus últimos balances." }
+          ]} 
+        />
         <div className="asset-header">
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
             <Link href="/" style={{ color: 'var(--text-muted)', display:'flex', alignItems:'center' }}><ArrowLeft size={16} /></Link>
