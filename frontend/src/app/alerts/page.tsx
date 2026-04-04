@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { api, Alert } from '@/lib/api';
+import Navbar from '@/components/Navbar';
 import PageHelp from '@/components/PageHelp';
 import { Bell, Plus, Trash2, CheckCircle, Clock } from 'lucide-react';
 
