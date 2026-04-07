@@ -1,15 +1,16 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart2, TrendingUp, Briefcase, Bell, Play, ShieldCheck, Star } from 'lucide-react';
+import { BarChart2, TrendingUp, Briefcase, Bell, Play, ShieldCheck, Star, GraduationCap } from 'lucide-react';
 
 const NAV = [
-  { href: '/',                icon: BarChart2,   label: 'Dashboard' },
-  { href: '/recommendations', icon: Star,        label: 'Recomendaciones' },
-  { href: '/portfolio',       icon: Briefcase,   label: 'Portfolio' },
-  { href: '/backtesting',     icon: Play,        label: 'Backtest' },
-  { href: '/alerts',          icon: Bell,        label: 'Alertas' },
-  { href: '/paper-trading',   icon: ShieldCheck, label: 'Paper' },
+  { href: '/',                icon: BarChart2,      label: 'Dashboard' },
+  { href: '/recommendations', icon: Star,           label: 'Recomendaciones' },
+  { href: '/portfolio',       icon: Briefcase,      label: 'Portfolio' },
+  { href: '/backtesting',     icon: Play,           label: 'Backtest' },
+  { href: '/alerts',          icon: Bell,           label: 'Alertas' },
+  { href: '/paper-trading',   icon: ShieldCheck,    label: 'Paper' },
+  { href: '/educacion',       icon: GraduationCap,  label: 'Educación' },
 ];
 
 export default function Navbar() {
