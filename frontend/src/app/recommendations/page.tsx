@@ -16,6 +16,42 @@ const CATEGORIES = [
   { value: 'crypto',  label: 'Crypto',         icon: Zap },
 ];
 
+const CURATED_LISTS = [
+  {
+    id: 'short-term',
+    title: '🏃 Corto Plazo (Trading / Momentum)',
+    description: 'Estrategias de mayor riesgo para aprovechar la volatilidad del mercado. Requiere gestión activa.',
+    color: 'var(--blue)',
+    assets: [
+      { ticker: 'QQQ', name: 'Invesco QQQ (Nasdaq 100)', desc: 'Alta concentración en tecnología, ideal para momentum.' },
+      { ticker: 'TQQQ', name: 'ProShares UltraPro QQQ', desc: 'Apalancado x3. Muy agresivo, solo para corto plazo.' },
+      { ticker: 'IWM', name: 'iShares Russell 2000', desc: 'Empresas pequeñas. Sensibles a ciclos económicos cortos.' },
+    ]
+  },
+  {
+    id: 'long-term',
+    title: '🌳 Largo Plazo (Inversión Pasiva)',
+    description: 'Portafolios "Buy & Hold". Diseñados para acumular riqueza aprovechando el interés compuesto.',
+    color: 'var(--green)',
+    assets: [
+      { ticker: 'VOO', name: 'Vanguard S&P 500 ETF', desc: 'Las 500 empresas más grandes de EE.UU.' },
+      { ticker: 'VTI', name: 'Vanguard Total Stock Market', desc: 'El mercado total estadounidense (+3000 empresas).' },
+      { ticker: 'SCHD', name: 'Schwab US Dividend Equity', desc: 'Empresas de alta calidad que pagan dividendos.' },
+    ]
+  },
+  {
+    id: 'alternatives',
+    title: '🌍 Papeles No Tan Conocidos',
+    description: 'Oportunidades de diversificación fuera del clásico mercado estadounidense.',
+    color: 'var(--yellow)',
+    assets: [
+      { ticker: 'EEM', name: 'MSCI Emerging Markets', desc: 'Exposición a países en desarrollo (China, India, etc).' },
+      { ticker: 'EWJ', name: 'iShares MSCI Japan', desc: 'Acceso directo a la bolsa japonesa.' },
+      { ticker: 'EWZS', name: 'MSCI Brazil Small-Cap', desc: 'Empresas pequeñas de Brasil. Alto riesgo/retorno.' },
+    ]
+  }
+];
+
 const SCORE_COLOR = (s: number) =>
   s >= 68 ? 'var(--green)' : s >= 52 ? 'var(--yellow)' : 'var(--red)';
 
@@ -157,13 +193,58 @@ export default function RecommendationsPage() {
 
         {/* Disclaimer */}
         <div style={{
-          padding: '10px 14px', borderRadius: 8, marginBottom: 20,
+          padding: '10px 14px', borderRadius: 8, marginBottom: 24,
           background: 'var(--yellow-dim)', border: '1px solid #ffd32a33',
           fontSize: 11, color: 'var(--yellow)', lineHeight: 1.6,
         }}>
           ⚠️ <strong>Aviso:</strong> Estas recomendaciones son generadas automáticamente por modelos de análisis técnico/fundamental
           y son solo para fines <strong>educativos</strong>. No constituyen asesoramiento financiero. Siempre realizá tu propia investigación.
         </div>
+
+        {/* Curated Recommendations */}
+        <div style={{ marginBottom: 32 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>
+            Estrategias Curadas
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            {CURATED_LISTS.map(list => (
+              <div key={list.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: 15, fontWeight: 800, marginBottom: 6, color: list.color }}>{list.title}</h3>
+                <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.4 }}>
+                  {list.description}
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+                  {list.assets.map(asset => (
+                    <Link key={asset.ticker} href={`/asset/${asset.ticker}`} style={{ textDecoration: 'none' }}>
+                      <div style={{
+                        padding: '10px 12px', background: 'var(--bg-surface)', borderRadius: 8,
+                        border: '1px solid var(--bg-border)', transition: 'all 0.2s',
+                        cursor: 'pointer'
+                      }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = list.color)}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--bg-border)')}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--text-primary)' }}>{asset.ticker}</span>
+                          <span style={{ fontSize: 10, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {asset.name}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.3 }}>
+                          {asset.desc}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>
+          Escáner Automático del Mercado
+        </h2>
 
         {/* Controls */}
         <div className="card" style={{ marginBottom: 20 }}>
