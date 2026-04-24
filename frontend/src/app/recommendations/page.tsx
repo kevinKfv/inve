@@ -150,6 +150,7 @@ export default function RecommendationsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'BUY' | 'WATCH' | 'AVOID'>('ALL');
+  const [selectedStrategy, setSelectedStrategy] = useState('all');
 
   const scan = useCallback(async () => {
     setLoading(true); setError(''); setData(null);
@@ -203,11 +204,34 @@ export default function RecommendationsPage() {
 
         {/* Curated Recommendations */}
         <div style={{ marginBottom: 32 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>
-            Estrategias Curadas
-          </h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 12 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>
+              Estrategias Curadas
+            </h2>
+            <div style={{ display: 'flex', gap: 6, overflowX: 'auto' }}>
+              {[
+                { id: 'all', label: 'Todas' },
+                { id: 'short-term', label: 'Corto Plazo' },
+                { id: 'long-term', label: 'Largo Plazo' },
+                { id: 'alternatives', label: 'Alternativos' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedStrategy(tab.id)}
+                  style={{
+                    padding: '6px 12px', borderRadius: 20, border: '1px solid var(--bg-border)',
+                    background: selectedStrategy === tab.id ? 'var(--text-primary)' : 'var(--bg-surface)',
+                    color: selectedStrategy === tab.id ? 'var(--bg-background)' : 'var(--text-secondary)',
+                    fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap'
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-            {CURATED_LISTS.map(list => (
+            {CURATED_LISTS.filter(list => selectedStrategy === 'all' || list.id === selectedStrategy).map(list => (
               <div key={list.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
                 <h3 style={{ fontSize: 15, fontWeight: 800, marginBottom: 6, color: list.color }}>{list.title}</h3>
                 <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.4 }}>
