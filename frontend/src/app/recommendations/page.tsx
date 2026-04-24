@@ -152,6 +152,29 @@ export default function RecommendationsPage() {
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'BUY' | 'WATCH' | 'AVOID'>('ALL');
   const [selectedStrategy, setSelectedStrategy] = useState('all');
 
+  const [curatedData, setCuratedData] = useState<Record<string, ScanItem>>({});
+  const [analyzingList, setAnalyzingList] = useState<string | null>(null);
+
+  const analyzeList = async (listId: string) => {
+    const list = CURATED_LISTS.find(l => l.id === listId);
+    if (!list) return;
+    setAnalyzingList(listId);
+    try {
+      const results = await Promise.all(
+        list.assets.map(a => api.quickRating(a.ticker).catch(() => null))
+      );
+      const newData = { ...curatedData };
+      results.forEach((r, i) => {
+        if (r) newData[list.assets[i].ticker] = r;
+      });
+      setCuratedData(newData);
+    } catch (e) {
+      console.error('Error analyzing curated list', e);
+    } finally {
+      setAnalyzingList(null);
+    }
+  };
+
   const scan = useCallback(async () => {
     setLoading(true); setError(''); setData(null);
     try {
@@ -233,34 +256,56 @@ export default function RecommendationsPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
             {CURATED_LISTS.filter(list => selectedStrategy === 'all' || list.id === selectedStrategy).map(list => (
               <div key={list.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ fontSize: 15, fontWeight: 800, marginBottom: 6, color: list.color }}>{list.title}</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 800, color: list.color }}>{list.title}</h3>
+                  <button 
+                    onClick={() => analyzeList(list.id)}
+                    disabled={analyzingList === list.id}
+                    style={{
+                      background: 'var(--bg-surface)', border: `1px solid ${list.color}55`, color: list.color,
+                      fontSize: 10, fontWeight: 700, padding: '4px 8px', borderRadius: 6, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 4
+                    }}
+                  >
+                    {analyzingList === list.id ? <Loader2 size={10} className="animate-spin" /> : <Zap size={10} />}
+                    {analyzingList === list.id ? 'Analizando...' : 'Analizar'}
+                  </button>
+                </div>
                 <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.4 }}>
                   {list.description}
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
-                  {list.assets.map(asset => (
-                    <Link key={asset.ticker} href={`/asset/${asset.ticker}`} style={{ textDecoration: 'none' }}>
-                      <div style={{
-                        padding: '10px 12px', background: 'var(--bg-surface)', borderRadius: 8,
-                        border: '1px solid var(--bg-border)', transition: 'all 0.2s',
-                        cursor: 'pointer'
-                      }}
-                        onMouseEnter={e => (e.currentTarget.style.borderColor = list.color)}
-                        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--bg-border)')}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--text-primary)' }}>{asset.ticker}</span>
-                          <span style={{ fontSize: 10, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {asset.name}
-                          </span>
+                  {list.assets.map(asset => {
+                    const itemData = curatedData[asset.ticker];
+                    if (itemData) {
+                      return <AssetCard key={asset.ticker} item={itemData} />;
+                    }
+                    return (
+                      <Link key={asset.ticker} href={`/asset/${asset.ticker}`} style={{ textDecoration: 'none' }}>
+                        <div style={{
+                          padding: '10px 12px', background: 'var(--bg-surface)', borderRadius: 8,
+                          border: '1px solid var(--bg-border)', transition: 'all 0.2s',
+                          cursor: 'pointer'
+                        }}
+                          onMouseEnter={e => (e.currentTarget.style.borderColor = list.color)}
+                          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--bg-border)')}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                            <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--text-primary)' }}>{asset.ticker}</span>
+                            <span style={{ fontSize: 10, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {asset.name}
+                            </span>
+                          </div>
+                          <p style={{ fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.3 }}>
+                            {asset.desc}
+                          </p>
                         </div>
-                        <p style={{ fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.3 }}>
-                          {asset.desc}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
+              </div>
+
               </div>
             ))}
           </div>
