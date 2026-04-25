@@ -28,7 +28,12 @@ const CURATED_LISTS = [
     assets: [
       { ticker: 'QQQ', name: 'Invesco QQQ (Nasdaq 100)', desc: 'Alta concentración en tecnología, ideal para momentum.' },
       { ticker: 'TQQQ', name: 'ProShares UltraPro QQQ', desc: 'Apalancado x3. Muy agresivo, solo para corto plazo.' },
+      { ticker: 'SOXL', name: 'Direxion Daily Semicond. x3', desc: 'Sector semiconductores apalancado. Volatilidad extrema.' },
       { ticker: 'IWM', name: 'iShares Russell 2000', desc: 'Empresas pequeñas. Sensibles a ciclos económicos cortos.' },
+      { ticker: 'SPXL', name: 'Direxion Daily S&P 500 Bull x3', desc: 'Apalancamiento agresivo x3 al índice principal SP500.' },
+      { ticker: 'TSLA', name: 'Tesla Inc.', desc: 'Altísima volatilidad direccional, ideal para momentum.' },
+      { ticker: 'NVDA', name: 'NVIDIA Corp.', desc: 'Líder en IA, grandes oscilaciones de precio y oportunidad.' },
+      { ticker: 'ARKK', name: 'ARK Innovation ETF', desc: 'Empresas súper disruptivas de alto riesgo e impulso.' },
     ]
   },
   {
@@ -39,7 +44,12 @@ const CURATED_LISTS = [
     assets: [
       { ticker: 'VOO', name: 'Vanguard S&P 500 ETF', desc: 'Las 500 empresas más grandes de EE.UU.' },
       { ticker: 'VTI', name: 'Vanguard Total Stock Market', desc: 'El mercado total estadounidense (+3000 empresas).' },
-      { ticker: 'SCHD', name: 'Schwab US Dividend Equity', desc: 'Empresas de alta calidad que pagan dividendos.' },
+      { ticker: 'VT', name: 'Vanguard Total World Stock', desc: 'La máxima diversificación global (EE.UU. y resto de mundo).' },
+      { ticker: 'SCHD', name: 'Schwab US Dividend Equity', desc: 'Empresas de altísima calidad que pagan dividendos estables.' },
+      { ticker: 'QQQM', name: 'Invesco NASDAQ 100 Mini', desc: 'Mismo índice tecnológico que QQQ pero pasivo (menor comisión).' },
+      { ticker: 'BRK.B', name: 'Berkshire Hathaway', desc: 'El conglomerado sólido de Warren Buffett (valor defensivo).' },
+      { ticker: 'MSFT', name: 'Microsoft Corp.', desc: 'Estabilidad, rentabilidad y dominio del mercado software.' },
+      { ticker: 'AAPL', name: 'Apple Inc.', desc: 'Flujo de caja inquebrantable y seguridad estructural.' },
     ]
   },
   {
@@ -49,8 +59,13 @@ const CURATED_LISTS = [
     color: 'var(--yellow)',
     assets: [
       { ticker: 'EEM', name: 'MSCI Emerging Markets', desc: 'Exposición a países en desarrollo (China, India, etc).' },
-      { ticker: 'EWJ', name: 'iShares MSCI Japan', desc: 'Acceso directo a la bolsa japonesa.' },
-      { ticker: 'EWZS', name: 'MSCI Brazil Small-Cap', desc: 'Empresas pequeñas de Brasil. Alto riesgo/retorno.' },
+      { ticker: 'EWJ', name: 'iShares MSCI Japan', desc: 'Acceso directo a la bolsa japonesa (alta eficiencia).' },
+      { ticker: 'EWZS', name: 'MSCI Brazil Small-Cap', desc: 'Empresas pequeñas de Brasil. Alto riesgo pero retorno enorme.' },
+      { ticker: 'INDA', name: 'iShares MSCI India ETF', desc: 'Exposición directa a uno de los países con mayor crecimiento.' },
+      { ticker: 'XLE', name: 'Energy Select Sector SPDR', desc: 'Sector energético tradicional (petróleo/gas), gran cobertura de inflación.' },
+      { ticker: 'URA', name: 'Global X Uranium ETF', desc: 'Minería y producción de Uranio. Temática energética de nicho.' },
+      { ticker: 'GLD', name: 'SPDR Gold Trust', desc: 'El instrumento estándar para refugiarse en el oro físico.' },
+      { ticker: 'SMH', name: 'VanEck Semiconductor ETF', desc: 'Toda la industria global productora de microchips.' },
     ]
   }
 ];
