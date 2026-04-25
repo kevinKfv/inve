@@ -19,57 +19,6 @@ const CATEGORIES = [
   { value: 'alternatives', label: 'Estrat. Alternativos',icon: Star },
 ];
 
-const CURATED_LISTS = [
-  {
-    id: 'short-term',
-    title: '🏃 Corto Plazo (Trading / Momentum)',
-    description: 'Estrategias de mayor riesgo para aprovechar la volatilidad del mercado. Requiere gestión activa.',
-    color: 'var(--blue)',
-    assets: [
-      { ticker: 'QQQ', name: 'Invesco QQQ (Nasdaq 100)', desc: 'Alta concentración en tecnología, ideal para momentum.' },
-      { ticker: 'TQQQ', name: 'ProShares UltraPro QQQ', desc: 'Apalancado x3. Muy agresivo, solo para corto plazo.' },
-      { ticker: 'SOXL', name: 'Direxion Daily Semicond. x3', desc: 'Sector semiconductores apalancado. Volatilidad extrema.' },
-      { ticker: 'IWM', name: 'iShares Russell 2000', desc: 'Empresas pequeñas. Sensibles a ciclos económicos cortos.' },
-      { ticker: 'SPXL', name: 'Direxion Daily S&P 500 Bull x3', desc: 'Apalancamiento agresivo x3 al índice principal SP500.' },
-      { ticker: 'TSLA', name: 'Tesla Inc.', desc: 'Altísima volatilidad direccional, ideal para momentum.' },
-      { ticker: 'NVDA', name: 'NVIDIA Corp.', desc: 'Líder en IA, grandes oscilaciones de precio y oportunidad.' },
-      { ticker: 'ARKK', name: 'ARK Innovation ETF', desc: 'Empresas súper disruptivas de alto riesgo e impulso.' },
-    ]
-  },
-  {
-    id: 'long-term',
-    title: '🌳 Largo Plazo (Inversión Pasiva)',
-    description: 'Portafolios "Buy & Hold". Diseñados para acumular riqueza aprovechando el interés compuesto.',
-    color: 'var(--green)',
-    assets: [
-      { ticker: 'VOO', name: 'Vanguard S&P 500 ETF', desc: 'Las 500 empresas más grandes de EE.UU.' },
-      { ticker: 'VTI', name: 'Vanguard Total Stock Market', desc: 'El mercado total estadounidense (+3000 empresas).' },
-      { ticker: 'VT', name: 'Vanguard Total World Stock', desc: 'La máxima diversificación global (EE.UU. y resto de mundo).' },
-      { ticker: 'SCHD', name: 'Schwab US Dividend Equity', desc: 'Empresas de altísima calidad que pagan dividendos estables.' },
-      { ticker: 'QQQM', name: 'Invesco NASDAQ 100 Mini', desc: 'Mismo índice tecnológico que QQQ pero pasivo (menor comisión).' },
-      { ticker: 'BRK.B', name: 'Berkshire Hathaway', desc: 'El conglomerado sólido de Warren Buffett (valor defensivo).' },
-      { ticker: 'MSFT', name: 'Microsoft Corp.', desc: 'Estabilidad, rentabilidad y dominio del mercado software.' },
-      { ticker: 'AAPL', name: 'Apple Inc.', desc: 'Flujo de caja inquebrantable y seguridad estructural.' },
-    ]
-  },
-  {
-    id: 'alternatives',
-    title: '🌍 Papeles No Tan Conocidos',
-    description: 'Oportunidades de diversificación fuera del clásico mercado estadounidense.',
-    color: 'var(--yellow)',
-    assets: [
-      { ticker: 'EEM', name: 'MSCI Emerging Markets', desc: 'Exposición a países en desarrollo (China, India, etc).' },
-      { ticker: 'EWJ', name: 'iShares MSCI Japan', desc: 'Acceso directo a la bolsa japonesa (alta eficiencia).' },
-      { ticker: 'EWZS', name: 'MSCI Brazil Small-Cap', desc: 'Empresas pequeñas de Brasil. Alto riesgo pero retorno enorme.' },
-      { ticker: 'INDA', name: 'iShares MSCI India ETF', desc: 'Exposición directa a uno de los países con mayor crecimiento.' },
-      { ticker: 'XLE', name: 'Energy Select Sector SPDR', desc: 'Sector energético tradicional (petróleo/gas), gran cobertura de inflación.' },
-      { ticker: 'URA', name: 'Global X Uranium ETF', desc: 'Minería y producción de Uranio. Temática energética de nicho.' },
-      { ticker: 'GLD', name: 'SPDR Gold Trust', desc: 'El instrumento estándar para refugiarse en el oro físico.' },
-      { ticker: 'SMH', name: 'VanEck Semiconductor ETF', desc: 'Toda la industria global productora de microchips.' },
-    ]
-  }
-];
-
 const SCORE_COLOR = (s: number) =>
   s >= 68 ? 'var(--green)' : s >= 52 ? 'var(--yellow)' : 'var(--red)';
 
@@ -168,59 +117,11 @@ export default function RecommendationsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'BUY' | 'WATCH' | 'AVOID'>('ALL');
-  const [selectedStrategy, setSelectedStrategy] = useState('all');
-
-  const [curatedData, setCuratedData] = useState<Record<string, ScanItem>>({});
-  const [analyzingList, setAnalyzingList] = useState<string | null>(null);
-
-  const analyzeList = async (listId: string) => {
-    const list = CURATED_LISTS.find(l => l.id === listId);
-    if (!list) return;
-    setAnalyzingList(listId);
-    try {
-      const results = await Promise.all(
-        list.assets.map(a => api.quickRating(a.ticker).catch(() => null))
-      );
-      const newData = { ...curatedData };
-      results.forEach((r, i) => {
-        if (r) newData[list.assets[i].ticker] = r;
-      });
-      setCuratedData(newData);
-    } catch (e) {
-      console.error('Error analyzing curated list', e);
-    } finally {
-      setAnalyzingList(null);
-    }
-  };
-
   const scan = useCallback(async () => {
     setLoading(true); setError(''); setData(null);
     try {
-      const isCurated = CURATED_LISTS.find(l => l.id === category);
-      if (isCurated) {
-        const results = await Promise.all(
-          isCurated.assets.map(a => api.quickRating(a.ticker).catch(() => null))
-        );
-        const valid = results.filter(r => r !== null && r.score >= minScore) as ScanItem[];
-        valid.sort((a, b) => b.score - a.score);
-        
-        setData({
-          category,
-          total_scanned: isCurated.assets.length,
-          total_results: valid.length,
-          summary: {
-            buys: valid.filter(r => r.rating === 'BUY').length,
-            watch: valid.filter(r => r.rating === 'WATCH').length,
-            avoid: valid.filter(r => r.rating === 'AVOID').length,
-          },
-          top_picks: valid.filter(r => r.score >= 68),
-          all_results: valid,
-          disclaimer: `Análisis de estrategia curada: ${isCurated.title}`
-        });
-      } else {
-        const result = await api.scanMarket(category, 40, minScore);
-        setData(result);
-      }
+      const result = await api.scanMarket(category, 40, minScore);
+      setData(result);
     } catch (e: any) {
       setError(e.message || 'Error al escanear el mercado');
     } finally {
@@ -264,90 +165,6 @@ export default function RecommendationsPage() {
         }}>
           ⚠️ <strong>Aviso:</strong> Estas recomendaciones son generadas automáticamente por modelos de análisis técnico/fundamental
           y son solo para fines <strong>educativos</strong>. No constituyen asesoramiento financiero. Siempre realizá tu propia investigación.
-        </div>
-
-        {/* Curated Recommendations */}
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 12 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>
-              Estrategias Curadas
-            </h2>
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto' }}>
-              {[
-                { id: 'all', label: 'Todas' },
-                { id: 'short-term', label: 'Corto Plazo' },
-                { id: 'long-term', label: 'Largo Plazo' },
-                { id: 'alternatives', label: 'Alternativos' },
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedStrategy(tab.id)}
-                  style={{
-                    padding: '6px 12px', borderRadius: 20, border: '1px solid var(--bg-border)',
-                    background: selectedStrategy === tab.id ? 'var(--text-primary)' : 'var(--bg-surface)',
-                    color: selectedStrategy === tab.id ? 'var(--bg-background)' : 'var(--text-secondary)',
-                    fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap'
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-            {CURATED_LISTS.filter(list => selectedStrategy === 'all' || list.id === selectedStrategy).map(list => (
-              <div key={list.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 800, color: list.color }}>{list.title}</h3>
-                  <button 
-                    onClick={() => analyzeList(list.id)}
-                    disabled={analyzingList === list.id}
-                    style={{
-                      background: 'var(--bg-surface)', border: `1px solid ${list.color}55`, color: list.color,
-                      fontSize: 10, fontWeight: 700, padding: '4px 8px', borderRadius: 6, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 4
-                    }}
-                  >
-                    {analyzingList === list.id ? <Loader2 size={10} className="animate-spin" /> : <Zap size={10} />}
-                    {analyzingList === list.id ? 'Analizando...' : 'Analizar'}
-                  </button>
-                </div>
-                <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 16, lineHeight: 1.4 }}>
-                  {list.description}
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
-                  {list.assets.map(asset => {
-                    const itemData = curatedData[asset.ticker];
-                    if (itemData) {
-                      return <AssetCard key={asset.ticker} item={itemData} />;
-                    }
-                    return (
-                      <Link key={asset.ticker} href={`/asset/${asset.ticker}`} style={{ textDecoration: 'none' }}>
-                        <div style={{
-                          padding: '10px 12px', background: 'var(--bg-surface)', borderRadius: 8,
-                          border: '1px solid var(--bg-border)', transition: 'all 0.2s',
-                          cursor: 'pointer'
-                        }}
-                          onMouseEnter={e => (e.currentTarget.style.borderColor = list.color)}
-                          onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--bg-border)')}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                            <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--text-primary)' }}>{asset.ticker}</span>
-                            <span style={{ fontSize: 10, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {asset.name}
-                            </span>
-                          </div>
-                          <p style={{ fontSize: 10, color: 'var(--text-secondary)', lineHeight: 1.3 }}>
-                            {asset.desc}
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
         <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>

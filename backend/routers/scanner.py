@@ -31,9 +31,19 @@ UNIVERSE = {
         "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD",
         "ADA-USD", "AVAX-USD", "DOT-USD", "MATIC-USD", "LINK-USD",
     ],
+    "short-term": [
+        "QQQ", "TQQQ", "SOXL", "IWM", "SPXL", "TSLA", "NVDA", "ARKK"
+    ],
+    "long-term": [
+        "VOO", "VTI", "VT", "SCHD", "QQQM", "BRK.B", "MSFT", "AAPL"
+    ],
+    "alternatives": [
+        "EEM", "EWJ", "EWZS", "INDA", "XLE", "URA", "GLD", "SMH"
+    ]
 }
 
-ALL_ASSETS = UNIVERSE["stocks"] + UNIVERSE["etfs"] + UNIVERSE["crypto"]
+# ALL_ASSETS keeps the main assets to avoid duplicate huge scans when 'all' is selected.
+ALL_ASSETS = list(set(UNIVERSE["stocks"] + UNIVERSE["etfs"] + UNIVERSE["crypto"]))
 
 
 def _scan_single(ticker: str) -> Optional[dict]:
@@ -104,12 +114,8 @@ def scan_market(
     Uses ThreadPoolExecutor for concurrent fetching.
     """
     # Select universe
-    if category == "stocks":
-        tickers = UNIVERSE["stocks"]
-    elif category == "etfs":
-        tickers = UNIVERSE["etfs"]
-    elif category == "crypto":
-        tickers = UNIVERSE["crypto"]
+    if category in UNIVERSE:
+        tickers = UNIVERSE[category]
     else:
         tickers = ALL_ASSETS
 
