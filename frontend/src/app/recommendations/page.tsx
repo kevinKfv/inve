@@ -10,10 +10,13 @@ import {
 } from 'lucide-react';
 
 const CATEGORIES = [
-  { value: 'all',     label: 'Todos',         icon: BarChart2 },
-  { value: 'stocks',  label: 'Acciones',      icon: TrendingUp },
-  { value: 'etfs',    label: 'ETFs',           icon: Star },
-  { value: 'crypto',  label: 'Crypto',         icon: Zap },
+  { value: 'all',          label: 'Todos',               icon: BarChart2 },
+  { value: 'stocks',       label: 'Acciones',            icon: TrendingUp },
+  { value: 'etfs',         label: 'ETFs',                icon: Star },
+  { value: 'crypto',       label: 'Crypto',              icon: Zap },
+  { value: 'short-term',   label: 'Estrat. Corto Plazo', icon: Zap },
+  { value: 'long-term',    label: 'Estrat. Largo Plazo', icon: TrendingUp },
+  { value: 'alternatives', label: 'Estrat. Alternativos',icon: Star },
 ];
 
 const CURATED_LISTS = [
@@ -178,8 +181,31 @@ export default function RecommendationsPage() {
   const scan = useCallback(async () => {
     setLoading(true); setError(''); setData(null);
     try {
-      const result = await api.scanMarket(category, 40, minScore);
-      setData(result);
+      const isCurated = CURATED_LISTS.find(l => l.id === category);
+      if (isCurated) {
+        const results = await Promise.all(
+          isCurated.assets.map(a => api.quickRating(a.ticker).catch(() => null))
+        );
+        const valid = results.filter(r => r !== null && r.score >= minScore) as ScanItem[];
+        valid.sort((a, b) => b.score - a.score);
+        
+        setData({
+          category,
+          total_scanned: isCurated.assets.length,
+          total_results: valid.length,
+          summary: {
+            buys: valid.filter(r => r.rating === 'BUY').length,
+            watch: valid.filter(r => r.rating === 'WATCH').length,
+            avoid: valid.filter(r => r.rating === 'AVOID').length,
+          },
+          top_picks: valid.filter(r => r.score >= 68),
+          all_results: valid,
+          disclaimer: `Análisis de estrategia curada: ${isCurated.title}`
+        });
+      } else {
+        const result = await api.scanMarket(category, 40, minScore);
+        setData(result);
+      }
     } catch (e: any) {
       setError(e.message || 'Error al escanear el mercado');
     } finally {
