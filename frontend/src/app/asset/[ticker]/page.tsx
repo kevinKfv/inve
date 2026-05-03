@@ -35,7 +35,7 @@ export default function AssetPage({ params }: { params: Params }) {
   const [loading, setLoading] = useState(true);
   const [mlLoading, setMlLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'technical' | 'fundamental' | 'risk' | 'ml'>('technical');
+  const [activeTab, setActiveTab] = useState<'technical' | 'fundamental' | 'risk' | 'ml' | 'options'>('technical');
 
   useEffect(() => {
     if (!ticker) return;
