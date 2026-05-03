@@ -17,8 +17,7 @@ export default function SentimentGauge({ ticker }: { ticker: string }) {
   useEffect(() => {
     async function fetchSentiment() {
       try {
-        const res = await fetch(`${api.baseUrl}/asset/${ticker}/sentiment`);
-        const json = await res.json();
+        const json = await api.sentiment(ticker);
         setData(json);
       } catch (e) {
         console.error('Error fetching sentiment', e);

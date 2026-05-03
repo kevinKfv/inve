@@ -232,4 +232,14 @@ export const api = {
     apiFetch<{ status: string; closed: string }>(`/api/alpaca/positions/${ticker}`, {
       method: 'DELETE',
     }),
+
+  macro: () => apiFetch<any>('/api/macro/'),
+
+  sentiment: (ticker: string) => apiFetch<any>(`/api/asset/${ticker}/sentiment`),
+
+  forecast: (ticker: string, days = 14) => apiFetch<any>(`/api/asset/${ticker}/forecast?days=${days}`),
+
+  optionsDates: (ticker: string) => apiFetch<any>(`/api/asset/${ticker}/options/dates`),
+
+  optionsChain: (ticker: string, date: string) => apiFetch<any>(`/api/asset/${ticker}/options?date=${date}`),
 };

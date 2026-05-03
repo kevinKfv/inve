@@ -14,9 +14,7 @@ export default function OptionsTable({ ticker }: { ticker: string }) {
   useEffect(() => {
     async function fetchDates() {
       try {
-        const res = await fetch(`${api.baseUrl}/asset/${ticker}/options/dates`);
-        if (!res.ok) throw new Error('No hay opciones disponibles para este activo.');
-        const json = await res.json();
+        const json = await api.optionsDates(ticker);
         setDates(json.dates);
         if (json.dates.length > 0) {
           setSelectedDate(json.dates[0]);
@@ -35,8 +33,7 @@ export default function OptionsTable({ ticker }: { ticker: string }) {
     async function fetchChain() {
       setLoadingChain(true);
       try {
-        const res = await fetch(`${api.baseUrl}/asset/${ticker}/options?date=${selectedDate}`);
-        const json = await res.json();
+        const json = await api.optionsChain(ticker, selectedDate);
         setChain(json);
       } catch (e) {
         console.error('Error fetching chain', e);

@@ -19,8 +19,7 @@ export default function MacroWidget() {
   useEffect(() => {
     async function fetchMacro() {
       try {
-        const res = await fetch(`${api.baseUrl}/macro`);
-        const json = await res.json();
+        const json = await api.macro();
         if (json.data) {
           setData(json.data);
         }

@@ -11,8 +11,7 @@ export default function ForecastChart({ ticker }: { ticker: string }) {
   useEffect(() => {
     async function fetchForecast() {
       try {
-        const res = await fetch(`${api.baseUrl}/asset/${ticker}/forecast?days=14`);
-        const json = await res.json();
+        const json = await api.forecast(ticker, 14);
         setData(json);
       } catch (e) {
         console.error('Error fetching forecast', e);
