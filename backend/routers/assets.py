@@ -212,3 +212,34 @@ async def get_price_on_date(ticker: str, date: str = Query(..., description="Dat
         raise
     except Exception as e:
         raise HTTPException(500, detail=str(e))
+
+@router.get("/{ticker}/sentiment")
+async def get_asset_sentiment(ticker: str):
+    """Fetch news and calculate sentiment score."""
+    from services.sentiment import analyze_sentiment
+    return analyze_sentiment(ticker)
+
+@router.get("/{ticker}/forecast")
+async def get_asset_forecast(ticker: str, days: int = Query(14, ge=1, le=30)):
+    """Predict future prices using scikit-learn Gradient Boosting."""
+    from services.forecasting import forecast_prices
+    df = _get_df_or_error(ticker, "2y", "1d")
+    return forecast_prices(df, days_to_predict=days)
+
+@router.get("/{ticker}/options/dates")
+async def get_asset_option_dates(ticker: str):
+    """Get available option expiration dates."""
+    from services.options import get_options_dates
+    dates = get_options_dates(ticker)
+    if not dates:
+        raise HTTPException(404, "No option dates available.")
+    return {"ticker": ticker.upper(), "dates": dates}
+
+@router.get("/{ticker}/options")
+async def get_asset_option_chain(ticker: str, date: str = Query(..., description="Expiration date YYYY-MM-DD")):
+    """Get option chain with calculated Greeks."""
+    from services.options import get_option_chain
+    chain = get_option_chain(ticker, date)
+    if "error" in chain:
+        raise HTTPException(500, detail=chain["error"])
+    return chain

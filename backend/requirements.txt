@@ -10,3 +10,5 @@ requests
 httpx
 pydantic
 alpaca-py
+vaderSentiment
+scipy

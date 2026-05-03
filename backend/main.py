@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 import os
 from dotenv import load_dotenv
 
-from routers import assets, portfolio, backtesting, alerts, scanner, alpaca
+from routers import assets, portfolio, backtesting, alerts, scanner, alpaca, macro
 
 load_dotenv()
 
@@ -63,6 +63,7 @@ app.include_router(backtesting.router, prefix="/api/backtest",   tags=["Backtest
 app.include_router(alerts.router,      prefix="/api/alerts",     tags=["Alerts"])
 app.include_router(scanner.router,                              tags=["Scanner"])
 app.include_router(alpaca.router,      prefix="/api/alpaca",     tags=["Alpaca"])
+app.include_router(macro.router,       prefix="/api/macro",      tags=["Macro"])
 
 import threading
 import time

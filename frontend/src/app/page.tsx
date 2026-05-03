@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import LiveValue from '@/components/LiveValue';
 import PageHelp from '@/components/PageHelp';
+import MacroWidget from '@/components/MacroWidget';
 import { api } from '@/lib/api';
 import { TrendingUp, TrendingDown, RefreshCw, Search, Plus, X } from 'lucide-react';
 
@@ -129,6 +130,8 @@ export default function Dashboard() {
             Actualizar
           </button>
         </div>
+
+        <MacroWidget />
 
         {/* Top movers */}
         <div className="top-movers-grid">

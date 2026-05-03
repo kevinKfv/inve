@@ -6,6 +6,9 @@ import RSIGauge from '@/components/RSIGauge';
 import ScoreCard from '@/components/ScoreCard';
 import SignalBadges from '@/components/SignalBadges';
 import PageHelp from '@/components/PageHelp';
+import SentimentGauge from '@/components/SentimentGauge';
+import ForecastChart from '@/components/ForecastChart';
+import OptionsTable from '@/components/OptionsTable';
 import { api, FullAnalysis, MLSignal, Candle } from '@/lib/api';
 import { TrendingUp, TrendingDown, ArrowLeft, Loader2, Brain, Shield } from 'lucide-react';
 import Link from 'next/link';
@@ -160,9 +163,9 @@ export default function AssetPage({ params }: { params: Params }) {
 
         {/* Tabs */}
         <div className="tab-bar" style={{ marginBottom: 16 }}>
-          {(['technical', 'fundamental', 'risk', 'ml'] as const).map(tab => (
+          {(['technical', 'fundamental', 'risk', 'ml', 'options'] as const).map(tab => (
             <button key={tab} className={`tab-item ${activeTab === tab ? 'active' : ''}`} onClick={() => setActiveTab(tab)}>
-              {tab === 'technical' ? '📊 Técnico' : tab === 'fundamental' ? '📋 Fundamental' : tab === 'risk' ? '🛡️ Riesgo' : '🤖 ML Signal'}
+              {tab === 'technical' ? '📊 Técnico' : tab === 'fundamental' ? '📋 Fundamental' : tab === 'risk' ? '🛡️ Riesgo' : tab === 'ml' ? '🤖 ML Signal' : '📈 Opciones'}
             </button>
           ))}
         </div>
@@ -386,6 +389,17 @@ export default function AssetPage({ params }: { params: Params }) {
                 </div>
               </div>
             )}
+            
+            <div className="two-col-grid" style={{ marginTop: 16 }}>
+              <SentimentGauge ticker={ticker} />
+              <ForecastChart ticker={ticker} />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'options' && (
+          <div style={{ marginTop: 16 }}>
+             <OptionsTable ticker={ticker} />
           </div>
         )}
       </div>
