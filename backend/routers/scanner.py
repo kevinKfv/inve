@@ -22,14 +22,25 @@ UNIVERSE = {
         "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "AVGO",
         "JPM", "V", "UNH", "XOM", "LLY", "JNJ", "WMT", "MA", "PG",
         "HD", "ORCL", "BAC", "MRK", "ABBV", "CVX", "KO", "PEP",
+        # 25 adicionales
+        "NFLX", "DIS", "AMD", "INTC", "CRM", "ADBE", "PYPL", "SQ", "UBER", "ABNB",
+        "BA", "IBM", "CSCO", "PFE", "T", "VZ", "C", "GS", "MS", "MCD",
+        "NKE", "SBUX", "F", "GM", "COST",
+        # 6 acciones de alto crecimiento extra
+        "PLTR", "NOW", "CRWD", "SNPS", "PANW", "CDNS"
     ],
     "etfs": [
         "SPY", "QQQ", "IWM", "VTI", "VOO", "GLD", "TLT", "DIA",
         "XLK", "XLF", "XLE", "XLV", "ARKK", "SOXX",
+        # 16 adicionales
+        "EEM", "VNQ", "VIG", "VUG", "BND", "LQD", "HYG", "EWJ",
+        "FXI", "SLV", "UNG", "USO", "XLC", "XLY", "XLI", "XLU",
+        # 4 ETFs de alto potencial extra
+        "SMH", "IGV", "XBI", "SCHD"
     ],
     "crypto": [
         "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD",
-        "ADA-USD", "AVAX-USD", "DOT-USD", "MATIC-USD", "LINK-USD",
+        "ADA-USD", "AVAX-USD", "DOT-USD", "MATIC-USD", "LINK-USD"
     ],
     "short-term": [
         "QQQ", "TQQQ", "SOXL", "IWM", "SPXL", "TSLA", "NVDA", "ARKK"
@@ -106,7 +117,7 @@ def _scan_single(ticker: str) -> Optional[dict]:
 @router.get("/scan")
 def scan_market(
     category: str = Query("all", description="all | stocks | etfs | crypto"),
-    limit: int = Query(30, ge=5, le=50),
+    limit: int = Query(50, ge=5, le=100),
     min_score: int = Query(0, ge=0, le=100),
 ):
     """
