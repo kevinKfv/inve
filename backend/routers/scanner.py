@@ -117,7 +117,7 @@ def _scan_single(ticker: str) -> Optional[dict]:
 @router.get("/scan")
 def scan_market(
     category: str = Query("all", description="all | stocks | etfs | crypto"),
-    limit: int = Query(50, ge=5, le=100),
+    limit: int = Query(100, ge=5, le=500),
     min_score: int = Query(0, ge=0, le=100),
 ):
     """
