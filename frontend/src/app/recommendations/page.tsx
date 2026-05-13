@@ -120,7 +120,7 @@ export default function RecommendationsPage() {
   const scan = useCallback(async () => {
     setLoading(true); setError(''); setData(null);
     try {
-      const result = await api.scanMarket(category, 40, minScore);
+      const result = await api.scanMarket(category, 100, minScore);
       setData(result);
     } catch (e: any) {
       setError(e.message || 'Error al escanear el mercado');
