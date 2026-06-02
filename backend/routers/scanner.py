@@ -50,11 +50,24 @@ UNIVERSE = {
     ],
     "alternatives": [
         "EEM", "EWJ", "EWZS", "INDA", "XLE", "URA", "GLD", "SMH"
+    ],
+    "merval": [
+        # Acciones locales (Argentina)
+        "GGAL.BA", "YPFD.BA", "PAMP.BA", "BMA.BA", "TXAR.BA",
+        "ALUA.BA", "CEPU.BA", "EDN.BA", "TGSU2.BA", "TRAN.BA",
+        "LOMA.BA", "CRES.BA", "SUPV.BA", "COME.BA", "MIRG.BA",
+        # ADRs en Estados Unidos
+        "GGAL", "YPF", "PAM", "BMA", "LOMA", "CRESY", 
+        "SUPV", "CEPU", "EDN", "TGS", "TEO", "IRS"
+    ],
+    "brazil": [
+        "PBR", "VALE", "NU", "ITUB", "BBD", "ABEV", 
+        "BSBR", "SUZ", "ERJ", "SID", "CIG"
     ]
 }
 
 # ALL_ASSETS keeps the main assets to avoid duplicate huge scans when 'all' is selected.
-ALL_ASSETS = list(set(UNIVERSE["stocks"] + UNIVERSE["etfs"] + UNIVERSE["crypto"]))
+ALL_ASSETS = list(set(UNIVERSE["stocks"] + UNIVERSE["etfs"] + UNIVERSE["crypto"] + UNIVERSE.get("merval", []) + UNIVERSE.get("brazil", [])))
 
 
 def _scan_single(ticker: str) -> Optional[dict]:

@@ -14,6 +14,8 @@ const CATEGORIES = [
   { value: 'stocks',       label: 'Acciones',            icon: TrendingUp },
   { value: 'etfs',         label: 'ETFs',                icon: Star },
   { value: 'crypto',       label: 'Crypto',              icon: Zap },
+  { value: 'merval',       label: 'Merval (Arg)',        icon: TrendingUp },
+  { value: 'brazil',       label: 'Brasil (ADRs)',       icon: TrendingUp },
   { value: 'short-term',   label: 'Estrat. Corto Plazo', icon: Zap },
   { value: 'long-term',    label: 'Estrat. Largo Plazo', icon: TrendingUp },
   { value: 'alternatives', label: 'Estrat. Alternativos',icon: Star },
