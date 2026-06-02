@@ -58,7 +58,7 @@ UNIVERSE = {
         "LOMA.BA", "CRES.BA", "SUPV.BA", "COME.BA", "MIRG.BA",
         # ADRs en Estados Unidos
         "GGAL", "YPF", "PAM", "BMA", "LOMA", "CRESY", 
-        "SUPV", "CEPU", "EDN", "TGS", "TEO", "IRS"
+        "SUPV", "CEPU", "EDN", "TGS", "TEO", "IRS", "BBAR", "VIST"
     ],
     "brazil": [
         "PBR", "VALE", "NU", "ITUB", "BBD", "ABEV", 
