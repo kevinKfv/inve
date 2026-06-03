@@ -324,10 +324,64 @@ def compute_investment_score(df: pd.DataFrame, info: dict) -> dict:
         label = "Alto riesgo"
         color = "red"
 
+    # Horizon Analysis
+    # Short term (1-4 weeks): heavily relies on Momentum and Trend (SMA20)
+    short_term_score = (momentum["score"] * 0.6) + (trend["score"] * 0.4)
+    if short_term_score >= 65:
+        st_label = "Atractivo"
+        st_color = "green"
+        st_reason = "Fuerte momentum y tendencia de corto plazo."
+    elif short_term_score <= 40:
+        st_label = "Poco atractivo"
+        st_color = "red"
+        st_reason = "Momentum débil o sobrecomprado, tendencia corta desfavorable."
+    else:
+        st_label = "Neutral"
+        st_color = "yellow"
+        st_reason = "Señales mixtas en el corto plazo, posible consolidación."
+
+    # Medium term (1-6 months): relies on Trend (SMA50, SMA200) and Risk
+    medium_term_score = (trend["score"] * 0.5) + (risk["score"] * 0.3) + (fundamentals["score"] * 0.2)
+    if medium_term_score >= 65:
+        mt_label = "Atractivo"
+        mt_color = "green"
+        mt_reason = "Tendencia sólida y riesgo controlado a mediano plazo."
+    elif medium_term_score <= 40:
+        mt_label = "Poco atractivo"
+        mt_color = "red"
+        mt_reason = "Estructura técnica débil o alto riesgo."
+    else:
+        mt_label = "Neutral"
+        mt_color = "yellow"
+        mt_reason = "El activo no muestra una dirección clara a mediano plazo."
+
+    # Long term (1+ years): relies mostly on Fundamentals and Long Trend
+    long_term_score = (fundamentals["score"] * 0.6) + (trend["score"] * 0.4)
+    if long_term_score >= 65:
+        lt_label = "Atractivo"
+        lt_color = "green"
+        lt_reason = "Fundamentales sólidos y tendencia secular positiva."
+    elif long_term_score <= 40:
+        lt_label = "Poco atractivo"
+        lt_color = "red"
+        lt_reason = "Fundamentales débiles o tendencia larga negativa."
+    else:
+        lt_label = "Neutral"
+        lt_color = "yellow"
+        lt_reason = "Fundamentales promedio, sin catalizador claro a largo plazo."
+
+    horizons = {
+        "short_term": {"label": st_label, "color": st_color, "reason": st_reason, "score": round(short_term_score, 1)},
+        "medium_term": {"label": mt_label, "color": mt_color, "reason": mt_reason, "score": round(medium_term_score, 1)},
+        "long_term": {"label": lt_label, "color": lt_color, "reason": lt_reason, "score": round(long_term_score, 1)}
+    }
+
     return {
         "total": total,
         "label": label,
         "color": color,
         "components": [trend, momentum, risk, fundamentals],
+        "horizons": horizons,
         "disclaimer": "Este score es educativo y no constituye asesoramiento financiero.",
     }
+

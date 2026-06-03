@@ -64,9 +64,18 @@ export interface ScoreComponent {
   score: number; weight: number; label: string; reasons: string[];
 }
 
+export interface HorizonDetails {
+  label: string; color: string; reason: string; score: number;
+}
+
 export interface InvestmentScore {
   total: number; label: string; color: string;
   components: ScoreComponent[];
+  horizons?: {
+    short_term: HorizonDetails;
+    medium_term: HorizonDetails;
+    long_term: HorizonDetails;
+  };
   disclaimer: string;
 }
 

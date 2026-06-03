@@ -35,7 +35,7 @@ export default function AssetPage({ params }: { params: Params }) {
   const [loading, setLoading] = useState(true);
   const [mlLoading, setMlLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'technical' | 'fundamental' | 'risk' | 'ml' | 'options'>('technical');
+  const [activeTab, setActiveTab] = useState<'technical' | 'fundamental' | 'risk' | 'horizons' | 'ml' | 'options'>('technical');
 
   useEffect(() => {
     if (!ticker) return;
@@ -163,9 +163,9 @@ export default function AssetPage({ params }: { params: Params }) {
 
         {/* Tabs */}
         <div className="tab-bar" style={{ marginBottom: 16 }}>
-          {(['technical', 'fundamental', 'risk', 'ml', 'options'] as const).map(tab => (
+          {(['technical', 'fundamental', 'risk', 'horizons', 'ml', 'options'] as const).map(tab => (
             <button key={tab} className={`tab-item ${activeTab === tab ? 'active' : ''}`} onClick={() => setActiveTab(tab)}>
-              {tab === 'technical' ? '📊 Técnico' : tab === 'fundamental' ? '📋 Fundamental' : tab === 'risk' ? '🛡️ Riesgo' : tab === 'ml' ? '🤖 ML Signal' : '📈 Opciones'}
+              {tab === 'technical' ? '📊 Técnico' : tab === 'fundamental' ? '📋 Fundamental' : tab === 'risk' ? '🛡️ Riesgo' : tab === 'horizons' ? '⏱️ Horizontes' : tab === 'ml' ? '🤖 ML Signal' : '📈 Opciones'}
             </button>
           ))}
         </div>
@@ -321,6 +321,37 @@ export default function AssetPage({ params }: { params: Params }) {
                 <StatRow label="R/R Ratio" value={`1:${analysis.risk.support_resistance_method.take_profit.rr_ratio}`} color="var(--accent)" />
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'horizons' && analysis?.score?.horizons && (
+          <div className="two-col-grid">
+            <div className="card" style={{ gridColumn: '1 / -1' }}>
+              <div className="section-title">⏱️ Análisis por Horizontes de Inversión</div>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+                Evaluación del activo para distintos plazos de inversión, combinando análisis técnico y fundamental.
+              </p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {[
+                  { title: "Corto Plazo (1-4 semanas)", data: analysis.score.horizons.short_term },
+                  { title: "Mediano Plazo (1-6 meses)", data: analysis.score.horizons.medium_term },
+                  { title: "Largo Plazo (1+ años)", data: analysis.score.horizons.long_term },
+                ].map((hz) => (
+                  <div key={hz.title} style={{ padding: 16, background: 'var(--bg-surface)', borderRadius: 12, border: '1px solid var(--bg-border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <span style={{ fontWeight: 800, fontSize: 15 }}>{hz.title}</span>
+                      <span className={`badge badge-${hz.data.color}`}>
+                        {hz.data.label} (Score: {hz.data.score})
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                      {hz.data.reason}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
