@@ -220,9 +220,10 @@ def preload_scanner_data(tickers: list[str], period: str = "3mo") -> None:
         print(f"Error bulk downloading OHLCV: {e}")
 
     # 2. Bulk fetch info: Use fast_info to bypass the 35 second HTTP sequential limit of .info
+    import concurrent.futures
     try:
         ts = yf.Tickers(" ".join(tickers))
-        for t in tickers:
+        def fetch_fast_info(t):
             if not _get_cached(f"info:{t}"):
                 try:
                     f_info = ts.tickers[t].fast_info
@@ -248,6 +249,10 @@ def preload_scanner_data(tickers: list[str], period: str = "3mo") -> None:
                 except Exception:
                     # Mark as failed in cache to prevent blocking on .info later
                     _set_cache(f"info:{t}", {"ticker": t, "price": 0})
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+            executor.map(fetch_fast_info, tickers)
+
     except Exception as e:
         print(f"Error bulk fetching info: {e}")
 
