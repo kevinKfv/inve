@@ -23,7 +23,7 @@ UNIVERSE = {
         "JPM", "V", "UNH", "XOM", "LLY", "JNJ", "WMT", "MA", "PG",
         "HD", "ORCL", "BAC", "MRK", "ABBV", "CVX", "KO", "PEP",
         # 25 adicionales
-        "NFLX", "DIS", "AMD", "INTC", "CRM", "ADBE", "PYPL", "SQ", "UBER", "ABNB",
+        "NFLX", "DIS", "AMD", "INTC", "CRM", "ADBE", "PYPL", "UBER", "ABNB",
         "BA", "IBM", "CSCO", "PFE", "T", "VZ", "C", "GS", "MS", "MCD",
         "NKE", "SBUX", "F", "GM", "COST",
         # 6 acciones de alto crecimiento extra
@@ -40,7 +40,7 @@ UNIVERSE = {
     ],
     "crypto": [
         "BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD",
-        "ADA-USD", "AVAX-USD", "DOT-USD", "MATIC-USD", "LINK-USD"
+        "ADA-USD", "AVAX-USD", "DOT-USD", "LINK-USD"
     ],
     "short-term": [
         "QQQ", "TQQQ", "SOXL", "IWM", "SPXL", "TSLA", "NVDA", "ARKK"
@@ -62,7 +62,7 @@ UNIVERSE = {
     ],
     "brazil": [
         "PBR", "VALE", "NU", "ITUB", "BBD", "ABEV", 
-        "BSBR", "SUZ", "ERJ", "SID", "CIG"
+        "BSBR", "SUZ", "SID", "CIG"
     ]
 }
 
