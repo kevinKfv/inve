@@ -206,8 +206,9 @@ def preload_scanner_data(tickers: list[str], period: str = "3mo") -> None:
                         "close": data["Close"].get(t, pd.Series(dtype=float)),
                         "volume": data["Volume"].get(t, pd.Series(dtype=float)) if "Volume" in data else 0,
                     }).dropna()
-                    if not df.empty:
-                        _set_cache(f"ohlcv:{t}:{period}:1d", df)
+                    _set_cache(f"ohlcv:{t}:{period}:1d", df)
+                else:
+                    _set_cache(f"ohlcv:{t}:{period}:1d", pd.DataFrame())
         else:
             # Single ticker
             if len(tickers) == 1:
@@ -245,7 +246,8 @@ def preload_scanner_data(tickers: list[str], period: str = "3mo") -> None:
                         result["change_pct"] = round((result["price"] - result["previous_close"]) / result["previous_close"] * 100, 2)
                     _set_cache(f"info:{t}", result)
                 except Exception:
-                    pass
+                    # Mark as failed in cache to prevent blocking on .info later
+                    _set_cache(f"info:{t}", {"ticker": t, "price": 0})
     except Exception as e:
         print(f"Error bulk fetching info: {e}")
 
