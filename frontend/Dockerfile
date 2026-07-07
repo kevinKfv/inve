@@ -21,4 +21,5 @@ RUN npm run build
 EXPOSE 3000
 
 # Start production server
+ENV HOSTNAME="0.0.0.0"
 CMD ["npm", "start"]
