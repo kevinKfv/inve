@@ -117,11 +117,8 @@ Ve al servicio **Frontend** → pestaña **`Variables`** → agrega estas variab
 
 | Variable | Valor | Descripción |
 |---|---|---|
-| `BACKEND_URL` | `https://investiq-backend-xxxx.up.railway.app` | URL del Backend. La usa Next.js **en el servidor** (SSR / rewrites) para proxear llamadas `/api/*`. |
-
-> ℹ️ **¿Por qué solo `BACKEND_URL` y no `NEXT_PUBLIC_API_URL`?**
->
-> En esta app, el frontend usa un **proxy interno de Next.js**: todas las llamadas del browser van a `/api/...` en el mismo dominio del frontend. Next.js internamente las redirige al backend usando `BACKEND_URL` (definido en `next.config.ts`). El browser del usuario nunca habla directamente con el backend, por lo que `NEXT_PUBLIC_API_URL` no es necesaria en producción.
+| `BACKEND_URL` | `https://investiq-backend-xxxx.up.railway.app` | URL del Backend para llamadas desde el servidor (SSR). |
+| `NEXT_PUBLIC_API_URL` | `https://investiq-backend-xxxx.up.railway.app` | URL del Backend para llamadas directas desde el navegador del usuario (Client-side fetching). |
 
 ---
 
